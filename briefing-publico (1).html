@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Briefing — Perfil com Propósito</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--preto:#0D0D0D;--ouro:#C9A84C;--ouro-lt:#E2C97E;--branco:#FFFFFF;--off:#F8F7F5;--prata:#C0C0C0;--cinza:#6B6B6B;--charcoal:#2A2A2A;--light:#EFEFEF;}
+body{font-family:'Barlow',sans-serif;font-weight:300;color:var(--charcoal);background:var(--off);min-height:100vh;}
+
+.header{background:var(--preto);padding:40px 24px 32px;text-align:center;}
+.header-label{font-size:9px;font-weight:600;letter-spacing:.35em;text-transform:uppercase;color:var(--ouro);margin-bottom:12px;}
+.header h1{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;color:var(--branco);line-height:1.2;}
+.header h1 em{font-style:italic;color:var(--ouro-lt);}
+.header p{margin-top:10px;font-size:13px;color:var(--prata);line-height:1.6;}
+.gold-rule{width:40px;height:1px;background:var(--ouro);margin:20px auto 0;}
+
+.container{max-width:640px;margin:0 auto;padding:32px 20px 80px;}
+
+.intro-card{background:var(--branco);border:1px solid var(--light);padding:20px 24px;margin-bottom:24px;}
+.intro-card p{font-size:13px;color:var(--cinza);line-height:1.8;}
+.intro-card strong{color:var(--charcoal);font-weight:500;}
+
+.cliente-bar{background:var(--branco);border:1px solid var(--light);padding:20px 24px;margin-bottom:24px;display:flex;gap:16px;align-items:center;}
+.cliente-bar label{font-size:9px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--ouro);white-space:nowrap;}
+.cliente-bar input{flex:1;border:none;outline:none;font-family:'Barlow',sans-serif;font-size:15px;color:var(--charcoal);background:transparent;border-bottom:1px solid var(--light);padding-bottom:4px;}
+.cliente-bar input::placeholder{color:var(--prata);}
+
+.secao{background:var(--branco);border:1px solid var(--light);margin-bottom:16px;}
+.secao-hdr{background:var(--preto);padding:12px 20px;display:flex;align-items:center;gap:12px;}
+.secao-num{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--ouro);}
+.secao-titulo{font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--branco);}
+.secao-body{padding:20px;display:flex;flex-direction:column;gap:18px;}
+
+.form-group{display:flex;flex-direction:column;gap:8px;}
+.form-label{font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--cinza);}
+.form-input{padding:10px 14px;border:1px solid var(--light);font-family:'Barlow',sans-serif;font-size:13px;color:var(--charcoal);outline:none;background:var(--branco);width:100%;}
+.form-input:focus{border-color:var(--ouro);}
+.form-textarea{padding:10px 14px;border:1px solid var(--light);font-family:'Barlow',sans-serif;font-size:13px;color:var(--charcoal);outline:none;resize:vertical;background:var(--branco);min-height:80px;width:100%;}
+.form-textarea:focus{border-color:var(--ouro);}
+.form-select{width:100%;padding:10px 14px;border:1px solid var(--light);font-family:'Barlow',sans-serif;font-size:13px;color:var(--charcoal);outline:none;background:var(--branco);appearance:none;}
+.form-select:focus{border-color:var(--ouro);}
+
+.opcoes{display:flex;flex-direction:column;gap:6px;}
+.opcao{display:flex;align-items:flex-start;gap:10px;padding:9px 14px;border:1px solid var(--light);cursor:pointer;transition:all .15s;}
+.opcao:hover{border-color:var(--ouro);background:#fdf9f1;}
+.opcao.selected{border-color:var(--ouro);background:#fdf9f1;}
+.opcao input{display:none;}
+.dot{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--prata);flex-shrink:0;margin-top:2px;transition:all .15s;}
+.opcao.selected .dot{background:var(--ouro);border-color:var(--ouro);}
+.opcao-lbl{font-size:13px;color:var(--charcoal);line-height:1.5;}
+
+.video-card{background:var(--preto);padding:24px;margin-bottom:8px;}
+.video-num{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;color:var(--ouro);margin-bottom:8px;}
+.video-titulo{font-size:13px;font-weight:500;color:var(--branco);margin-bottom:6px;}
+.video-desc{font-size:12px;color:var(--prata);line-height:1.7;}
+.video-dica{margin-top:10px;background:rgba(201,168,76,.1);padding:10px 14px;}
+.video-dica p{font-size:11px;color:var(--ouro-lt);font-style:italic;}
+
+.enviar-box{background:var(--preto);padding:32px 24px;text-align:center;margin-top:24px;}
+.enviar-titulo{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--branco);margin-bottom:8px;}
+.enviar-sub{font-size:13px;color:var(--prata);margin-bottom:24px;line-height:1.6;}
+.btn-enviar{background:var(--ouro);color:var(--preto);border:none;padding:16px 40px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;cursor:pointer;transition:all .2s;width:100%;}
+.btn-enviar:hover{background:var(--ouro-lt);}
+.btn-enviar:disabled{opacity:.5;cursor:not-allowed;}
+
+.sucesso{display:none;text-align:center;padding:48px 24px;background:var(--branco);border:1px solid var(--light);margin-top:24px;}
+.sucesso.ativo{display:block;}
+.sucesso-icon{font-size:48px;margin-bottom:16px;}
+.sucesso h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--preto);margin-bottom:12px;}
+.sucesso p{font-size:13px;color:var(--cinza);line-height:1.8;}
+
+.erro-msg{background:#fee2e2;border:1px solid #fca5a5;color:#dc2626;padding:12px 16px;font-size:13px;margin-top:12px;display:none;}
+.erro-msg.ativo{display:block;}
+
+.progress-bar{height:3px;background:var(--light);margin-bottom:32px;}
+.progress-fill{height:3px;background:var(--ouro);transition:width .3s;}
+
+.footer{text-align:center;padding:32px 24px;background:var(--preto);margin-top:0;}
+.footer p{font-size:11px;color:var(--cinza);}
+.footer strong{color:var(--ouro);font-weight:400;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-label">Método PPP · Perfil com Propósito</div>
+  <h1>Briefing de<br><em>Posicionamento</em></h1>
+  <p>Responda com calma e sinceridade.<br>Não existe certo ou errado — existe o que é verdadeiro para você.</p>
+  <div class="gold-rule"></div>
+</div>
+
+<div class="container">
+
+  <div class="intro-card">
+    <p>Este briefing é o ponto de partida da nossa estratégia. Suas respostas vão me ajudar a entender quem você é, como você se comunica e qual é o melhor posicionamento para o seu perfil.<br><br>
+    <strong>Tempo estimado: 10 a 15 minutos.</strong> Reserve um momento tranquilo para responder.</p>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+
+  <!-- NOME -->
+  <div class="cliente-bar">
+    <label>Seu nome</label>
+    <input type="text" id="b-nome-cliente" placeholder="Nome completo..." oninput="atualizarProgresso()">
+  </div>
+
+  <!-- SEÇÃO 1 -->
+  <div class="secao">
+    <div class="secao-hdr"><div class="secao-num">1</div><div class="secao-titulo">Sobre você e seu trabalho</div></div>
+    <div class="secao-body">
+      <div class="form-group"><label class="form-label">Sua especialidade e nicho</label><input type="text" class="form-input" id="b-esp" placeholder="Ex: Ginecologista especializada em saúde feminina" oninput="atualizarProgresso()"></div>
+      <div class="form-group"><label class="form-label">Seu @ no Instagram</label><input type="text" class="form-input" id="b-ig" placeholder="@seuperfil" oninput="atualizarProgresso()"></div>
+      <div class="form-group"><label class="form-label">Quem você atende hoje</label><input type="text" class="form-input" id="b-publico-atual" placeholder="Ex: Mulheres 30-50 anos, classe média-alta"></div>
+      <div class="form-group"><label class="form-label">Quem você quer alcançar</label><input type="text" class="form-input" id="b-publico-desejado" placeholder="Ex: Mulheres executivas 35-55 anos, alto poder aquisitivo"></div>
+      <div class="form-group"><label class="form-label">Seu objetivo principal no Instagram</label>
+        <select class="form-select" id="b-objetivo">
+          <option value="">Selecione...</option>
+          <option>Atrair novos pacientes / clientes</option>
+          <option>Construir autoridade na especialidade</option>
+          <option>Vender serviços de alto ticket</option>
+          <option>Humanizar o perfil e criar conexão</option>
+          <option>Crescer seguidores e visibilidade</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Seus principais serviços e valores</label><textarea class="form-textarea" id="b-servicos" placeholder="Ex: Consulta presencial R$350, telemedicina R$250, programa 3 meses R$1.800..."></textarea></div>
+      <div class="form-group"><label class="form-label">O que te diferencia da concorrência</label><textarea class="form-textarea" id="b-diferenciais" placeholder="Ex: Único especialista da cidade, abordagem integrativa, 15 anos de experiência..."></textarea></div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 2 -->
+  <div class="secao">
+    <div class="secao-hdr"><div class="secao-num">2</div><div class="secao-titulo">Sua personalidade</div></div>
+    <div class="secao-body">
+      <div class="form-group"><label class="form-label">Como você se descreve quando fala do seu trabalho?</label>
+      <div class="opcoes">
+        <label class="opcao"><input type="radio" name="b_identidade" value="tecnica"><div class="dot"></div><span class="opcao-lbl">Uso termos técnicos e especializados</span></label>
+        <label class="opcao"><input type="radio" name="b_identidade" value="humana"><div class="dot"></div><span class="opcao-lbl">Falo do impacto que causo na vida das pessoas</span></label>
+        <label class="opcao"><input type="radio" name="b_identidade" value="pratica"><div class="dot"></div><span class="opcao-lbl">Sou direta e objetiva, sem floreios</span></label>
+        <label class="opcao"><input type="radio" name="b_identidade" value="inspiradora"><div class="dot"></div><span class="opcao-lbl">Falo com entusiasmo e senso de missão</span></label>
+      </div></div>
+      <div class="form-group"><label class="form-label">O que te motiva a trabalhar todos os dias?</label>
+      <div class="opcoes">
+        <label class="opcao"><input type="radio" name="b_motivacao" value="reconhecimento"><div class="dot"></div><span class="opcao-lbl">Ser reconhecida como referência na área</span></label>
+        <label class="opcao"><input type="radio" name="b_motivacao" value="impacto"><div class="dot"></div><span class="opcao-lbl">Ver a transformação real nas pessoas que atendo</span></label>
+        <label class="opcao"><input type="radio" name="b_motivacao" value="liberdade"><div class="dot"></div><span class="opcao-lbl">Ter liberdade e autonomia profissional</span></label>
+        <label class="opcao"><input type="radio" name="b_motivacao" value="inovar"><div class="dot"></div><span class="opcao-lbl">Inovar e fazer diferente do convencional</span></label>
+        <label class="opcao"><input type="radio" name="b_motivacao" value="pertencer"><div class="dot"></div><span class="opcao-lbl">Fazer parte de algo maior — causa, propósito</span></label>
+      </div></div>
+      <div class="form-group"><label class="form-label">Como você reage diante de situações difíceis?</label>
+      <div class="opcoes">
+        <label class="opcao"><input type="radio" name="b_reacao" value="lidera"><div class="dot"></div><span class="opcao-lbl">Assumo o controle e lidero</span></label>
+        <label class="opcao"><input type="radio" name="b_reacao" value="acolhe"><div class="dot"></div><span class="opcao-lbl">Acolho primeiro e resolvo com calma</span></label>
+        <label class="opcao"><input type="radio" name="b_reacao" value="analisa"><div class="dot"></div><span class="opcao-lbl">Paro, analiso e busco o caminho mais lógico</span></label>
+        <label class="opcao"><input type="radio" name="b_reacao" value="questiona"><div class="dot"></div><span class="opcao-lbl">Questiono o padrão e busco uma solução diferente</span></label>
+      </div></div>
+      <div class="form-group"><label class="form-label">Como você se veste e se apresenta profissionalmente?</label>
+      <div class="opcoes">
+        <label class="opcao"><input type="radio" name="b_estilo" value="elegante"><div class="dot"></div><span class="opcao-lbl">Elegante e sóbria — transmito autoridade</span></label>
+        <label class="opcao"><input type="radio" name="b_estilo" value="acessivel"><div class="dot"></div><span class="opcao-lbl">Acessível e próxima — pareço alguém familiar</span></label>
+        <label class="opcao"><input type="radio" name="b_estilo" value="criativo"><div class="dot"></div><span class="opcao-lbl">Criativa e expressiva — tenho personalidade marcante</span></label>
+        <label class="opcao"><input type="radio" name="b_estilo" value="minimalista"><div class="dot"></div><span class="opcao-lbl">Minimalista — menos é mais</span></label>
+      </div></div>
+      <div class="form-group"><label class="form-label">O que você quer que digam de você?</label>
+      <div class="opcoes">
+        <label class="opcao"><input type="radio" name="b_reputacao" value="melhor"><div class="dot"></div><span class="opcao-lbl">"É a melhor da área — super especializada"</span></label>
+        <label class="opcao"><input type="radio" name="b_reputacao" value="humana"><div class="dot"></div><span class="opcao-lbl">"Me entendeu de verdade — fui me sentindo cuidada"</span></label>
+        <label class="opcao"><input type="radio" name="b_reputacao" value="diferente"><div class="dot"></div><span class="opcao-lbl">"É completamente diferente dos outros profissionais"</span></label>
+        <label class="opcao"><input type="radio" name="b_reputacao" value="resultado"><div class="dot"></div><span class="opcao-lbl">"Resolveu o que ninguém tinha conseguido"</span></label>
+        <label class="opcao"><input type="radio" name="b_reputacao" value="exclusiva"><div class="dot"></div><span class="opcao-lbl">"É difícil conseguir — vale cada centavo"</span></label>
+      </div></div>
+      <div class="form-group"><label class="form-label">Como você fala naturalmente em áudios e vídeos?</label>
+      <div class="opcoes">
+        <label class="opcao"><input type="radio" name="b_fala" value="formal"><div class="dot"></div><span class="opcao-lbl">Formal e estruturada — início, meio e fim claros</span></label>
+        <label class="opcao"><input type="radio" name="b_fala" value="proxima"><div class="dot"></div><span class="opcao-lbl">Próxima e natural — como com uma amiga</span></label>
+        <label class="opcao"><input type="radio" name="b_fala" value="didatica"><div class="dot"></div><span class="opcao-lbl">Didática — gosto de ensinar passo a passo</span></label>
+        <label class="opcao"><input type="radio" name="b_fala" value="direta"><div class="dot"></div><span class="opcao-lbl">Direta — vou direto ao ponto</span></label>
+        <label class="opcao"><input type="radio" name="b_fala" value="entusiasta"><div class="dot"></div><span class="opcao-lbl">Entusiasta e expressiva — animo, gesticulo</span></label>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 3 -->
+  <div class="secao">
+    <div class="secao-hdr"><div class="secao-num">3</div><div class="secao-titulo">Conteúdo e referências</div></div>
+    <div class="secao-body">
+      <div class="form-group"><label class="form-label">Ideias de conteúdo ou assuntos que você quer falar</label><textarea class="form-textarea" id="b-rascunhos" placeholder="Ex: quero falar sobre prevenção, sobre minha rotina, sobre casos que me marcaram..."></textarea></div>
+      <div class="form-group"><label class="form-label">Alguém que você admira a forma de se comunicar</label><input type="text" class="form-input" id="b-referencia" placeholder="Pode ser fora da sua área — o que essa pessoa tem que você admira?"></div>
+      <div class="form-group"><label class="form-label">Observações adicionais</label><textarea class="form-textarea" id="b-obs" placeholder="Medos, bloqueios, expectativas, algo importante que eu precisa saber sobre você..."></textarea></div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 4 — VÍDEOS -->
+  <div class="secao">
+    <div class="secao-hdr"><div class="secao-num">4</div><div class="secao-titulo">Os 3 vídeos</div></div>
+    <div class="secao-body">
+      <p style="font-size:13px;color:var(--cinza);line-height:1.8;">Para que eu possa analisar seu tom de voz, seu jeito de falar e criar roteiros que soem como você de verdade — preciso que você grave 3 vídeos curtos.<br><br>
+      <strong style="color:var(--charcoal);">Regras simples:</strong> Até 1 minuto cada. Sem roteiro — fale naturalmente. Pode ser no celular mesmo, em um ambiente com boa luz e sem muito barulho.</p>
+
+      <div class="video-card">
+        <div class="video-num">01</div>
+        <div class="video-titulo">Se apresente como se estivesse falando com uma nova paciente</div>
+        <div class="video-desc">Quem você é, o que você faz, por que escolheu essa área. Fale do jeito que você fala no dia a dia — sem ensaiar.</div>
+        <div class="video-dica"><p>💡 Dica: Imagine que você acabou de conhecer alguém em um evento e ela perguntou o que você faz.</p></div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-num">02</div>
+        <div class="video-titulo">Explique algo da sua especialidade de forma simples</div>
+        <div class="video-desc">Escolha um tema que você explica com frequência — uma dúvida comum, um mito que você desfaz, algo que as pessoas precisam saber. Explique como se fosse para uma amiga leiga.</div>
+        <div class="video-dica"><p>💡 Dica: Pense em qual pergunta você mais recebe das suas pacientes e responda ela aqui.</p></div>
+      </div>
+
+      <div class="video-card">
+        <div class="video-num">03</div>
+        <div class="video-titulo">Conte por que você faz o que faz</div>
+        <div class="video-desc">Sua história, sua motivação, o que te move. Pode ser um caso que te marcou, uma lembrança, um momento de virada. Seja genuína.</div>
+        <div class="video-dica"><p>💡 Dica: Não precisa ser perfeito. O que importa é ser verdadeiro.</p></div>
+      </div>
+
+      <div style="background:var(--off);padding:16px 20px;border:1px solid var(--light);">
+        <div style="font-size:9px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--ouro);margin-bottom:8px;">Como enviar os vídeos</div>
+        <p style="font-size:13px;color:var(--cinza);line-height:1.8;">Após enviar este briefing, mande os 3 vídeos diretamente no WhatsApp para <strong style="color:var(--charcoal);">(69) 99367-5655</strong> com o seu nome na mensagem.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTÃO ENVIAR -->
+  <div class="enviar-box">
+    <div class="enviar-titulo">Pronto para enviar?</div>
+    <div class="enviar-sub">Revise suas respostas e clique em enviar.<br>Você não precisa fazer nada depois — eu entrarei em contato.</div>
+    <button class="btn-enviar" id="btn-enviar" onclick="enviarBriefing()">Enviar Briefing</button>
+    <div class="erro-msg" id="erro-msg">Preencha pelo menos seu nome, especialidade e Instagram antes de enviar.</div>
+  </div>
+
+  <!-- SUCESSO -->
+  <div class="sucesso" id="sucesso">
+    <div class="sucesso-icon">✨</div>
+    <h2>Briefing enviado!</h2>
+    <p>Recebi suas respostas com sucesso.<br><br>
+    Lembre-se de enviar os <strong>3 vídeos</strong> no WhatsApp <strong>(69) 99367-5655</strong>.<br><br>
+    Entrarei em contato em breve. Obrigada pela confiança! 🤍</p>
+  </div>
+
+</div>
+
+<div class="footer">
+  <p><strong>Paula Andreza</strong> · Estrategista de Posicionamento Digital · Método PPP</p>
+  <p style="margin-top:6px;">@paulaandresasm · (69) 99367-5655</p>
+</div>
+
+<script>
+const CLIENTE_ID = new URLSearchParams(window.location.search).get('id') || '';
+const CLIENTE_NOME_URL = new URLSearchParams(window.location.search).get('nome') || '';
+
+if(CLIENTE_NOME_URL) {
+  document.getElementById('b-nome-cliente').value = decodeURIComponent(CLIENTE_NOME_URL);
+  document.getElementById('b-nome-cliente').readOnly = true;
+}
+
+document.querySelectorAll('.opcao').forEach(op => {
+  op.addEventListener('click', function() {
+    const inp = this.querySelector('input');
+    document.querySelectorAll(`input[name="${inp.name}"]`).forEach(i => i.closest('.opcao').classList.remove('selected'));
+    inp.checked = true;
+    this.classList.add('selected');
+    atualizarProgresso();
+  });
+});
+
+function gV(n) { const el = document.querySelector(`input[name="${n}"]:checked`); return el ? el.value : ''; }
+
+function atualizarProgresso() {
+  const campos = [
+    document.getElementById('b-nome-cliente').value,
+    document.getElementById('b-esp').value,
+    document.getElementById('b-ig').value,
+    gV('b_identidade'), gV('b_motivacao'), gV('b_reacao'),
+    gV('b_estilo'), gV('b_reputacao'), gV('b_fala')
+  ];
+  const preenchidos = campos.filter(c => c.trim()).length;
+  const pct = Math.round(preenchidos / campos.length * 100);
+  document.getElementById('progress').style.width = pct + '%';
+}
+
+async function enviarBriefing() {
+  const nome = document.getElementById('b-nome-cliente').value.trim();
+  const esp = document.getElementById('b-esp').value.trim();
+  const ig = document.getElementById('b-ig').value.trim();
+
+  if (!nome || !esp || !ig) {
+    document.getElementById('erro-msg').classList.add('ativo');
+    return;
+  }
+  document.getElementById('erro-msg').classList.remove('ativo');
+
+  const dados = {
+    clienteId: CLIENTE_ID,
+    nomeCliente: nome,
+    timestamp: new Date().toISOString(),
+    briefing: {
+      'b-esp': esp,
+      'b-ig': ig,
+      'b-perfil': ig,
+      'b-metricas': '',
+      'b-publico-atual': document.getElementById('b-publico-atual').value,
+      'b-publico-desejado': document.getElementById('b-publico-desejado').value,
+      'b-objetivo': document.getElementById('b-objetivo').value,
+      'b-servicos': document.getElementById('b-servicos').value,
+      'b-diferenciais': document.getElementById('b-diferenciais').value,
+      'b-rascunhos': document.getElementById('b-rascunhos').value,
+      'b-referencia': document.getElementById('b-referencia').value,
+      'b-obs': document.getElementById('b-obs').value,
+      b_identidade: gV('b_identidade'),
+      b_motivacao: gV('b_motivacao'),
+      b_reacao: gV('b_reacao'),
+      b_estilo: gV('b_estilo'),
+      b_reputacao: gV('b_reputacao'),
+      b_fala: gV('b_fala')
+    }
+  };
+
+  // Salvar no localStorage com chave do cliente
+  // Salvar localmente
+  const chave = 'ppp_briefing_' + (CLIENTE_ID || nome.replace(/\s+/g, '_').toLowerCase());
+  localStorage.setItem(chave, JSON.stringify(dados));
+
+  // Salvar no Firebase
+  document.getElementById('btn-enviar').disabled = true;
+  document.getElementById('btn-enviar').textContent = 'Enviando...';
+  
+  if(window.enviarBriefingFirebase) {
+    await window.enviarBriefingFirebase(dados);
+  }
+
+  // Mostrar sucesso
+  document.querySelector('.enviar-box').style.display = 'none';
+  document.getElementById('sucesso').classList.add('ativo');
+  document.getElementById('sucesso').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+</script>
+
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+  import { getFirestore, collection, addDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCiaXrh5qdVJ2Veyv667fBZwhZ5Jn_0FHY",
+    authDomain: "metodo-ppp.firebaseapp.com",
+    projectId: "metodo-ppp",
+    storageBucket: "metodo-ppp.firebasestorage.app",
+    messagingSenderId: "890651190613",
+    appId: "1:890651190613:web:dc61958e36ab7e95213bdc"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Override the enviarBriefing function to save to Firebase
+  window.enviarBriefingFirebase = async function(dados) {
+    try {
+      await addDoc(collection(db, 'briefings'), {
+        ...dados,
+        timestamp: serverTimestamp(),
+        lido: false
+      });
+      return true;
+    } catch(e) {
+      console.error('Erro Firebase:', e);
+      return false;
+    }
+  };
+</script>
+</body>
+</html>
