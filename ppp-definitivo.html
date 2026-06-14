@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PPP Sistema">
+<meta name="theme-color" content="#0D0D0D">
+<title>Método PPP — Sistema Completo</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--preto:#0D0D0D;--ouro:#C9A84C;--ouro-lt:#E2C97E;--branco:#FFFFFF;--off:#F8F7F5;--prata:#C0C0C0;--cinza:#6B6B6B;--charcoal:#2A2A2A;--light:#EFEFEF;--sidebar:210px;}
+html,body{height:100%;overflow:hidden;background:var(--off);}
+body{font-family:'Barlow',sans-serif;font-weight:300;color:var(--charcoal);display:flex;flex-direction:column;}
+/* TOPBAR */
+.topbar{background:var(--preto);height:50px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-shrink:0;z-index:100;}
+.topbar-brand{font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--ouro);}
+.topbar-brand span{color:var(--branco);font-size:12px;font-weight:300;margin-left:8px;font-family:'Barlow',sans-serif;}
+.topbar-user{font-size:12px;color:var(--prata);}
+/* LAYOUT */
+.app-body{display:flex;flex:1;overflow:hidden;}
+.sidebar{width:var(--sidebar);background:var(--preto);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;}
+.sidebar-section{padding:16px 0 4px;}
+.sidebar-label{font-size:9px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--cinza);padding:0 16px 8px;}
+.nav-item{padding:10px 16px;font-size:13px;color:var(--prata);display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .15s;border-left:2px solid transparent;}
+.nav-item svg{width:16px;height:16px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+.nav-item:hover{color:var(--branco);background:rgba(255,255,255,.05);}
+.nav-item.active{color:var(--ouro);border-left-color:var(--ouro);background:rgba(201,168,76,.08);}
+/* MAIN */
+.main{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.screen{display:none;flex:1;overflow-y:auto;flex-direction:column;}
+.screen.active{display:flex;}
+/* COMPONENTS */
+.page-header{background:var(--branco);border-bottom:1px solid var(--light);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:var(--preto);}
+.page-sub{font-size:12px;color:var(--cinza);margin-top:2px;}
+.btn{padding:8px 18px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:500;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:6px;transition:all .15s;letter-spacing:.04em;}
+.btn-gold{background:var(--ouro);color:var(--preto);}
+.btn-gold:hover{background:var(--ouro-lt);}
+.btn-gold:disabled{opacity:.5;cursor:not-allowed;}
+.btn-outline{background:transparent;color:var(--cinza);border:1px solid var(--light);}
+.btn-outline:hover{border-color:var(--ouro);color:var(--ouro);}
+.btn-danger{background:#fee2e2;color:#dc2626;border:none;}
+.btn-big{padding:14px 36px;font-size:13px;}
+.content{padding:20px 24px;flex:1;}
+/* METRICS */
+.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
+.metric-card{background:var(--branco);border:1px solid var(--light);padding:16px 18px;}
+.metric-label{font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--cinza);margin-bottom:6px;}
+.metric-val{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;color:var(--preto);}
+.metric-sub{font-size:11px;color:var(--ouro);margin-top:4px;}
+/* CARDS */
+.card{background:var(--branco);border:1px solid var(--light);margin-bottom:12px;}
+.card-header{padding:14px 20px;border-bottom:1px solid var(--light);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-size:13px;font-weight:500;color:var(--preto);}
+.card-body{padding:16px 20px;}
+/* CLIENTE ROW */
+.cliente-row{background:var(--branco);border:1px solid var(--light);padding:14px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:border-color .15s;margin-bottom:8px;}
+.cliente-row:hover{border-color:var(--ouro);}
+.avatar{width:38px;height:38px;border-radius:50%;background:var(--preto);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--ouro);flex-shrink:0;}
+.cliente-info{flex:1;}
+.cliente-nome{font-size:13px;font-weight:500;color:var(--preto);}
+.cliente-esp{font-size:11px;color:var(--cinza);margin-top:2px;}
+.badge{font-size:10px;padding:3px 10px;font-weight:500;}
+.badge-novo{background:#dbeafe;color:#1e40af;}
+.badge-andamento{background:#fef3c7;color:#92400e;}
+.badge-concluido{background:#dcfce7;color:#166534;}
+/* FICHA */
+.ficha-header{background:var(--preto);padding:18px 24px;display:flex;align-items:center;gap:14px;flex-shrink:0;flex-wrap:wrap;}
+.avatar-lg{width:46px;height:46px;border-radius:50%;background:rgba(201,168,76,.15);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;color:var(--ouro);flex-shrink:0;}
+.ficha-nome{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--branco);}
+.ficha-esp{font-size:11px;color:var(--prata);margin-top:2px;}
+.back-btn{font-size:12px;color:var(--prata);cursor:pointer;display:flex;align-items:center;gap:4px;}
+.back-btn:hover{color:var(--ouro);}
+/* TABS */
+.tab-bar{background:var(--branco);border-bottom:1px solid var(--light);display:flex;padding:0 20px;flex-shrink:0;overflow-x:auto;}
+.tab{font-size:12px;font-weight:500;padding:11px 14px;cursor:pointer;color:var(--cinza);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;white-space:nowrap;}
+.tab:hover{color:var(--charcoal);}
+.tab.active{color:var(--ouro);border-bottom-color:var(--ouro);}
+.tab-content{display:none;padding:20px 24px;}
+.tab-content.active{display:block;}
+/* MINI GRID */
+.mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;}
+.mini-card{background:var(--off);padding:12px 16px;}
+.mini-label{font-size:9px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--ouro);margin-bottom:4px;}
+.mini-val{font-size:13px;font-weight:500;color:var(--preto);}
+.tag-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+.tag{font-size:10px;padding:3px 10px;background:var(--branco);border:1px solid var(--light);color:var(--charcoal);}
+.tag.gold{background:var(--ouro);color:var(--preto);border-color:var(--ouro);}
+/* FORM */
+.form-group{margin-bottom:18px;}
+.form-label{font-size:9px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--cinza);margin-bottom:7px;display:block;}
+.form-input{width:100%;padding:10px 14px;border:1px solid var(--light);font-family:'Barlow',sans-serif;font-size:13px;color:var(--charcoal);outline:none;background:var(--branco);}
+.form-input:focus{border-color:var(--ouro);}
+.form-textarea{width:100%;padding:10px 14px;border:1px solid var(--light);font-family:'Barlow',sans-serif;font-size:13px;color:var(--charcoal);outline:none;resize:vertical;background:var(--branco);min-height:80px;}
+.form-textarea:focus{border-color:var(--ouro);}
+.form-select{width:100%;padding:10px 14px;border:1px solid var(--light);font-family:'Barlow',sans-serif;font-size:13px;color:var(--charcoal);outline:none;background:var(--branco);appearance:none;cursor:pointer;}
+.form-select:focus{border-color:var(--ouro);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+/* OPCOES */
+.opcoes{display:flex;flex-direction:column;gap:6px;}
+.opcao{display:flex;align-items:flex-start;gap:10px;padding:9px 14px;border:1px solid var(--light);cursor:pointer;transition:all .15s;}
+.opcao:hover{border-color:var(--ouro);background:#fdf9f1;}
+.opcao.selected{border-color:var(--ouro);background:#fdf9f1;}
+.opcao input{display:none;}
+.dot{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--prata);flex-shrink:0;margin-top:2px;transition:all .15s;}
+.opcao.selected .dot{background:var(--ouro);border-color:var(--ouro);}
+.opcao-lbl{font-size:13px;color:var(--charcoal);line-height:1.5;}
+/* SECOES BRIEFING/BIO */
+.secao-bloco{background:var(--branco);border:1px solid var(--light);margin-bottom:16px;}
+.secao-hdr{background:var(--preto);padding:12px 20px;display:flex;align-items:center;gap:12px;}
+.secao-num{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--ouro);}
+.secao-titulo{font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--branco);}
+.secao-body{padding:20px;display:flex;flex-direction:column;gap:18px;}
+/* CHECKLIST */
+.checklist-item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--branco);border:1px solid var(--light);margin-bottom:8px;cursor:pointer;transition:all .15s;}
+.checklist-item:hover{border-color:var(--ouro);}
+.checklist-item.done{background:var(--off);}
+.check-box{width:20px;height:20px;border:1.5px solid var(--light);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.checklist-item.done .check-box{background:var(--ouro);border-color:var(--ouro);}
+.check-lbl{font-size:13px;color:var(--charcoal);flex:1;}
+.checklist-item.done .check-lbl{text-decoration:line-through;color:var(--cinza);}
+.check-fase{font-size:10px;padding:2px 8px;background:var(--off);color:var(--cinza);font-weight:500;}
+/* ESTRATÉGIA BLOCOS */
+.est-bloco{background:var(--branco);border:1px solid var(--light);margin-bottom:14px;}
+.est-hdr{background:var(--preto);padding:12px 20px;display:flex;align-items:center;gap:12px;}
+.est-num{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--ouro);}
+.est-titulo{font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--branco);}
+.est-body{padding:20px;}
+.est-resultado{font-size:13px;color:var(--cinza);line-height:1.85;}
+.est-resultado strong{color:var(--charcoal);font-weight:500;}
+.est-obs-area{margin-top:16px;border-top:1px solid var(--light);padding-top:16px;}
+.est-obs-label{font-size:9px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--ouro);margin-bottom:8px;}
+/* GERAR BTN */
+.gerar-box{background:var(--preto);padding:28px 24px;text-align:center;margin:20px 0;}
+.gerar-titulo{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--branco);margin-bottom:8px;}
+.gerar-sub{font-size:12px;color:var(--prata);margin-bottom:20px;line-height:1.6;}
+/* ARQUÉTIPOS VISUAL */
+.arq-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+.arq-card{background:var(--branco);border:1px solid var(--light);padding:14px;cursor:pointer;transition:all .15s;}
+.arq-card:hover{border-color:var(--ouro);}
+.arq-card.ativo{border-color:var(--ouro);background:#fdf9f1;}
+.arq-card-nome{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500;color:var(--preto);margin-bottom:4px;}
+.arq-card-desc{font-size:11px;color:var(--cinza);line-height:1.5;margin-bottom:6px;}
+.arq-card-ex{font-size:10px;color:var(--ouro);font-style:italic;}
+/* AGENDA */
+.agenda-item{background:var(--branco);border:1px solid var(--light);padding:14px 18px;margin-bottom:8px;display:flex;align-items:center;gap:14px;}
+.agenda-date{background:var(--preto);padding:8px 12px;text-align:center;min-width:52px;}
+.agenda-day{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;color:var(--ouro);line-height:1;}
+.agenda-month{font-size:9px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--prata);}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:1000;align-items:center;justify-content:center;}
+.modal-overlay.ativo{display:flex;}
+.modal{background:var(--branco);width:100%;max-width:540px;max-height:90vh;overflow-y:auto;margin:20px;}
+.modal-header{background:var(--preto);padding:18px 24px;display:flex;align-items:center;justify-content:space-between;}
+.modal-titulo{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--branco);}
+.modal-close{color:var(--prata);cursor:pointer;font-size:22px;background:none;border:none;line-height:1;}
+.modal-body{padding:24px;}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--light);display:flex;gap:10px;justify-content:flex-end;}
+/* LOADING */
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(13,13,13,.9);z-index:2000;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
+.loading-overlay.ativo{display:flex;}
+.dots span{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ouro);margin:0 3px;animation:bounce .9s infinite;}
+.dots span:nth-child(2){animation-delay:.2s;}
+.dots span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,80%,100%{transform:translateY(0);}40%{transform:translateY(-10px);}}
+.loading-txt{font-size:14px;color:var(--branco);font-family:'Cormorant Garamond',serif;font-style:italic;}
+.loading-step{font-size:11px;color:var(--cinza);}
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--preto);color:var(--branco);padding:12px 20px;font-size:13px;z-index:3000;display:none;border-left:3px solid var(--ouro);}
+.toast.ativo{display:block;}
+/* EMPTY */
+.empty{text-align:center;padding:48px 24px;color:var(--cinza);}
+.empty-icon{font-size:40px;margin-bottom:12px;}
+.empty p{font-size:13px;line-height:1.7;}
+/* PROGRESS */
+.progress-bar{background:var(--light);height:4px;margin-bottom:20px;}
+.progress-fill{background:var(--ouro);height:4px;transition:width .3s;}
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--light);}
+@media(max-width:700px){
+  .sidebar{width:50px;}
+  .nav-item span,.sidebar-label{display:none;}
+  .metrics-grid{grid-template-columns:1fr 1fr;}
+  .metrics-grid .metric-card:last-child,.metrics-grid .metric-card:nth-child(3){grid-column:span 1;}
+  .form-row,.mini-grid,.arq-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-brand">PPP <span>Método Perfil com Propósito</span></div>
+  <div class="topbar-user" id="topbar-user">Paula Andreza</div>
+</div>
+
+<div class="app-body">
+<nav class="sidebar">
+  <div class="sidebar-section">
+    <div class="sidebar-label">Principal</div>
+    <div class="nav-item active" onclick="navTo('dashboard')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg><span>Dashboard</span>
+    </div>
+    <div class="nav-item" onclick="navTo('clientes')">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Clientes</span>
+    </div>
+    <div class="nav-item" onclick="navTo('agenda')">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Agenda</span>
+    </div>
+    <div class="nav-item" onclick="navTo('arquetipos')">
+      <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Arquétipos</span>
+    </div>
+  </div>
+  <div class="sidebar-section" style="margin-top:auto;">
+    <div class="sidebar-label">Sistema</div>
+    <div class="nav-item" onclick="navTo('config')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Config</span>
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- DASHBOARD -->
+<div id="screen-dashboard" class="screen active">
+  <div class="page-header">
+    <div><div class="page-title">Dashboard</div><div class="page-sub" id="dash-data">—</div></div>
+    <button class="btn btn-gold" onclick="abrirModalCliente()">+ Nova cliente</button>
+  </div>
+  <div class="content">
+    <div class="metrics-grid" style="grid-template-columns:repeat(3,1fr);">
+      <div class="metric-card"><div class="metric-label">Clientes este mês</div><div class="metric-val" id="dash-total">0</div><div class="metric-sub" id="dash-meta-c">Meta: 8</div></div>
+      <div class="metric-card"><div class="metric-label">Em andamento</div><div class="metric-val" id="dash-andamento">0</div><div class="metric-sub">Em produção</div></div>
+      <div class="metric-card"><div class="metric-label">Concluídas</div><div class="metric-val" id="dash-concluido">0</div><div class="metric-sub">Este mês</div></div>
+    </div>
+    <div class="metrics-grid" style="grid-template-columns:repeat(3,1fr);margin-top:0;">
+      <div class="metric-card" style="border-top:2px solid var(--ouro);">
+        <div class="metric-label">Total Contratado</div>
+        <div class="metric-val" id="dash-total-contratado">R$0</div>
+        <div class="metric-sub" id="dash-meta-r">Meta: R$10.376</div>
+      </div>
+      <div class="metric-card" style="border-top:2px solid #166534;">
+        <div class="metric-label">✓ Valor Recebido</div>
+        <div class="metric-val" id="dash-recebido" style="color:#166534;">R$0</div>
+        <div class="metric-sub">Pagamentos confirmados</div>
+      </div>
+      <div class="metric-card" style="border-top:2px solid #92400e;">
+        <div class="metric-label">⏳ A Receber</div>
+        <div class="metric-val" id="dash-a-receber" style="color:#92400e;">R$0</div>
+        <div class="metric-sub">Pagamentos pendentes</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div class="card-title">Clientes recentes</div><button class="btn btn-outline" onclick="navTo('clientes')">Ver todas</button></div>
+      <div class="card-body" id="dash-lista"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CLIENTES -->
+<div id="screen-clientes" class="screen">
+  <div class="page-header">
+    <div><div class="page-title">Clientes</div><div class="page-sub" id="clientes-count">0 clientes</div></div>
+    <button class="btn btn-gold" onclick="abrirModalCliente()">+ Nova cliente</button>
+  </div>
+  <div class="content">
+    <div style="margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap;">
+      <input type="text" class="form-input" placeholder="Buscar cliente..." oninput="filtrarClientes(this.value)" style="max-width:280px;">
+      <select class="form-select" onchange="filtrarStatus(this.value)" style="max-width:180px;">
+        <option value="">Todos os status</option>
+        <option value="novo">Novo</option>
+        <option value="andamento">Em andamento</option>
+        <option value="concluido">Concluído</option>
+      </select>
+    </div>
+    <div id="lista-clientes"></div>
+  </div>
+</div>
+
+<!-- FICHA -->
+<div id="screen-ficha" class="screen">
+  <div class="ficha-header">
+    <div class="back-btn" onclick="navTo('clientes')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Voltar
+    </div>
+    <div class="avatar-lg" id="ficha-avatar">—</div>
+    <div style="flex:1;"><div class="ficha-nome" id="ficha-nome">—</div><div class="ficha-esp" id="ficha-esp">—</div></div>
+    <span class="badge" id="ficha-badge">—</span>
+  </div>
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchTab(this,'tab-visao')">Visão Geral</div>
+    <div class="tab" onclick="switchTab(this,'tab-checklist')">✓ Checklist</div>
+    <div class="tab" onclick="switchTab(this,'tab-briefing')">Briefing</div>
+    <div class="tab" onclick="switchTab(this,'tab-bio')">Bioimpedância</div>
+    <div class="tab" onclick="switchTab(this,'tab-ia')">IA — Estratégia</div>
+    <div class="tab" onclick="switchTab(this,'tab-docs')">Documentos</div>
+    <div class="tab" onclick="switchTab(this,'tab-notas')">Notas</div>
+  </div>
+  <div style="flex:1;overflow-y:auto;">
+
+    <!-- VISÃO GERAL -->
+    <div id="tab-visao" class="tab-content active">
+      <div class="mini-grid" id="ficha-mini-grid"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+        <button class="btn btn-gold" onclick="copiarLinkBriefing()">📋 Copiar Link do Briefing</button>
+        <button class="btn btn-outline" id="btn-trello">Abrir Trello</button>
+        <button class="btn btn-outline" id="btn-drive">Abrir Drive</button>
+        <button class="btn btn-outline" onclick="editarClienteAtual()">Editar</button>
+        <button class="btn btn-danger" onclick="confirmarExclusao()">Excluir</button>
+      </div>
+      <div id="link-briefing-box" style="display:none;background:var(--off);border:1px solid var(--ouro);padding:12px 16px;margin-bottom:12px;">
+        <div style="font-size:9px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--ouro);margin-bottom:6px;">Link do Briefing — envie no WhatsApp da cliente</div>
+        <div style="font-size:13px;color:var(--charcoal);word-break:break-all;" id="link-briefing-txt">—</div>
+        <div style="font-size:11px;color:var(--cinza);margin-top:6px;font-style:italic;">Copie o link e envie no WhatsApp. ✓</div>
+      </div>
+      <div style="margin-bottom:20px;">
+        <button class="btn btn-outline" onclick="switchTab(document.querySelectorAll('.tab-bar .tab')[2],'tab-briefing')">Ver Briefing Interno</button>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">Informações</div></div>
+        <div class="card-body" id="ficha-info"></div>
+      </div>
+    </div>
+
+    <!-- CHECKLIST -->
+    <div id="tab-checklist" class="tab-content">
+      <div style="margin-bottom:16px;">
+        <div class="progress-bar"><div class="progress-fill" id="checklist-progress" style="width:0%"></div></div>
+        <div style="font-size:12px;color:var(--cinza);" id="checklist-pct">0% concluído</div>
+      </div>
+      <div id="checklist-lista"></div>
+    </div>
+
+    <!-- BRIEFING -->
+    <div id="tab-briefing" class="tab-content">
+      <div id="briefing-form"></div>
+    </div>
+
+    <!-- BIOIMPEDÂNCIA -->
+    <div id="tab-bio" class="tab-content">
+      <div class="secao-bloco">
+        <div class="secao-hdr"><div class="secao-num">📷</div><div class="secao-titulo">Análise Visual do Perfil</div></div>
+        <div class="secao-body">
+          <div class="form-group"><label class="form-label">Foto ou print do perfil do Instagram</label><input type="file" accept="image/*" id="bio-foto" class="form-input" style="padding:6px;"></div>
+          <div class="form-group"><label class="form-label">Métricas e situação atual</label><textarea class="form-textarea" id="bio-metricas" rows="3" placeholder="Ex: 1.200 seguidores, engajamento 3%, bio atual: Médica | Ginecologista | Porto Velho..."></textarea></div>
+        </div>
+      </div>
+      <div id="bio-perguntas"></div>
+      <div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-gold btn-big" onclick="gerarBioimpedancia()">✦ Gerar Bioimpedância</button>
+      </div>
+      <div id="bio-resultado" style="margin-top:24px;display:none;"></div>
+    </div>
+
+    <!-- IA ESTRATÉGIA -->
+    <div id="tab-ia" class="tab-content">
+      <div id="ia-vazio" style="text-align:center;padding:40px 24px;color:var(--cinza);">
+        <div style="font-size:40px;margin-bottom:12px;">✦</div>
+        <p style="font-size:13px;line-height:1.7;">Preencha o briefing e a bioimpedância.<br>Depois clique em <strong style="color:var(--charcoal);">Gerar Estratégia Completa</strong>.</p>
+        <div class="gerar-box" style="margin-top:24px;">
+          <div class="gerar-titulo">Gerar Estratégia Completa com IA</div>
+          <div class="gerar-sub">A IA analisa tudo e gera: diagnóstico, avatar, arquétipo, posicionamento, linha editorial, narrativa, 12 conteúdos e 3 roteiros — prontos para apresentar.</div>
+          <button class="btn btn-gold btn-big" onclick="gerarEstrategiaCompleta()">✦ Gerar Agora</button>
+        </div>
+      </div>
+      <div id="ia-resultado" style="display:none;">
+        <div style="margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <button class="btn btn-gold" onclick="gerarPDF()">↓ Gerar PDF de Apresentação</button>
+          <button class="btn btn-outline" onclick="gerarEstrategiaCompleta()">↻ Regenerar</button>
+          <span style="font-size:11px;color:var(--cinza);" id="ia-gerado-em">—</span>
+        </div>
+        <div id="ia-blocos"></div>
+      </div>
+    </div>
+
+    <!-- DOCUMENTOS -->
+    <div id="tab-docs" class="tab-content">
+      <div style="margin-bottom:16px;"><button class="btn btn-gold" onclick="abrirModalDoc()">+ Adicionar documento</button></div>
+      <div id="docs-lista"></div>
+    </div>
+
+    <!-- NOTAS -->
+    <div id="tab-notas" class="tab-content">
+      <div class="form-group"><label class="form-label">Notas e observações</label><textarea class="form-textarea" id="notas-textarea" rows="12" placeholder="Anote aqui observações sobre a cliente..." oninput="salvarNotas()"></textarea></div>
+      <div style="font-size:11px;color:var(--cinza);font-style:italic;">Salvo automaticamente</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- AGENDA -->
+<div id="screen-agenda" class="screen">
+  <div class="page-header">
+    <div><div class="page-title">Agenda</div><div class="page-sub">Reuniões e prazos</div></div>
+    <button class="btn btn-gold" onclick="abrirModalAgenda()">+ Novo evento</button>
+  </div>
+  <div class="content" id="agenda-lista"></div>
+</div>
+
+<!-- ARQUÉTIPOS -->
+<div id="screen-arquetipos" class="screen">
+  <div class="page-header"><div><div class="page-title">Guia de Arquétipos</div><div class="page-sub">Os 12 arquétipos com exemplos para usar na reunião</div></div></div>
+  <div class="content">
+    <div class="arq-grid" id="arq-grid"></div>
+    <div id="arq-detalhe" style="display:none;" class="card">
+      <div class="card-header"><div class="card-title" id="arq-det-nome">—</div></div>
+      <div class="card-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div><div class="mini-label">Descrição</div><p style="font-size:13px;color:var(--cinza);line-height:1.7;" id="arq-det-desc">—</p></div>
+          <div>
+            <div class="mini-label" style="margin-bottom:6px;">Exemplos de marcas e figuras</div>
+            <p style="font-size:13px;color:var(--cinza);" id="arq-det-ex">—</p>
+            <div class="mini-label" style="margin-top:12px;margin-bottom:6px;">Palavras-chave</div>
+            <div class="tag-row" id="arq-det-tags"></div>
+            <div class="mini-label" style="margin-top:12px;margin-bottom:6px;">Tom de comunicação</div>
+            <p style="font-size:13px;color:var(--cinza);" id="arq-det-tom">—</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIG -->
+<div id="screen-config" class="screen">
+  <div class="page-header"><div><div class="page-title">Configurações</div></div></div>
+  <div class="content">
+    <div class="card"><div class="card-header"><div class="card-title">Perfil</div></div>
+    <div class="card-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Nome</label><input type="text" class="form-input" value="Paula Andreza" id="cfg-nome"></div>
+        <div class="form-group"><label class="form-label">Instagram</label><input type="text" class="form-input" value="@paulaandresasm" id="cfg-ig"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">WhatsApp</label><input type="text" class="form-input" value="(69) 99367-5655" id="cfg-wp"></div>
+        <div class="form-group"><label class="form-label">E-mail</label><input type="text" class="form-input" value="paulaandrezasm@gmail.com" id="cfg-email"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Meta clientes/mês</label><input type="number" class="form-input" value="8" id="cfg-meta-c"></div>
+        <div class="form-group"><label class="form-label">Valor por cliente (R$)</label><input type="number" class="form-input" value="1297" id="cfg-valor"></div>
+      </div>
+      <button class="btn btn-gold" onclick="salvarConfig()">Salvar</button>
+    </div></div>
+    <div class="card" style="margin-top:12px;"><div class="card-header"><div class="card-title">Dados</div></div>
+    <div class="card-body" style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn btn-outline" onclick="exportarDados()">Exportar JSON</button>
+      <button class="btn btn-danger" onclick="limparDados()">Apagar tudo</button>
+    </div></div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- MODAIS -->
+<div class="modal-overlay" id="modal-cliente">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-titulo" id="modal-c-titulo">Nova cliente</div><button class="modal-close" onclick="fecharModal('modal-cliente')">×</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-id">
+      <div class="form-row"><div class="form-group"><label class="form-label">Nome *</label><input type="text" class="form-input" id="c-nome" placeholder="Dra. Maria Silva"></div><div class="form-group"><label class="form-label">Especialidade *</label><input type="text" class="form-input" id="c-esp" placeholder="Ginecologista"></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">Cidade</label><input type="text" class="form-input" id="c-cidade"></div><div class="form-group"><label class="form-label">WhatsApp</label><input type="text" class="form-input" id="c-tel"></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">Instagram</label><input type="text" class="form-input" id="c-ig"></div><div class="form-group"><label class="form-label">Status</label><select class="form-select" id="c-status"><option value="novo">Novo</option><option value="andamento">Em andamento</option><option value="concluido">Concluído</option></select></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">Prazo de entrega</label><input type="date" class="form-input" id="c-prazo"></div><div class="form-group"><label class="form-label">Valor (R$)</label><input type="number" class="form-input" id="c-valor"></div></div>
+      <div class="form-group"><label class="form-label">Link do Trello</label><input type="text" class="form-input" id="c-trello" placeholder="https://trello.com/b/..."></div>
+      <div class="form-group"><label class="form-label">Link do Google Drive</label><input type="text" class="form-input" id="c-drive" placeholder="https://drive.google.com/..."></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Forma de pagamento</label>
+          <select class="form-select" id="c-pagamento">
+            <option value="pix">Pix à vista</option>
+            <option value="credito2">Cartão 2x</option>
+            <option value="credito3">Cartão 3x</option>
+            <option value="outro">Outro</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Status do pagamento</label>
+          <select class="form-select" id="c-status-pag">
+            <option value="pendente">Pendente</option>
+            <option value="parcial">Parcial</option>
+            <option value="pago">Pago ✓</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="fecharModal('modal-cliente')">Cancelar</button><button class="btn btn-gold" onclick="salvarCliente()">Salvar</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-doc">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-titulo">Adicionar documento</div><button class="modal-close" onclick="fecharModal('modal-doc')">×</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Nome *</label><input type="text" class="form-input" id="doc-nome"></div>
+      <div class="form-group"><label class="form-label">Tipo</label><select class="form-select" id="doc-tipo"><option>Briefing</option><option>Análise de perfil</option><option>Roteiro</option><option>Plano de conteúdo</option><option>Identidade visual</option><option>Outro</option></select></div>
+      <div class="form-group"><label class="form-label">Link</label><input type="text" class="form-input" id="doc-link" placeholder="https://..."></div>
+      <div class="form-group"><label class="form-label">Notas</label><textarea class="form-textarea" id="doc-notas" rows="2"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="fecharModal('modal-doc')">Cancelar</button><button class="btn btn-gold" onclick="salvarDocumento()">Salvar</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-agenda">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-titulo">Novo evento</div><button class="modal-close" onclick="fecharModal('modal-agenda')">×</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">Título *</label><input type="text" class="form-input" id="ag-titulo"></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">Data *</label><input type="date" class="form-input" id="ag-data"></div><div class="form-group"><label class="form-label">Horário</label><input type="time" class="form-input" id="ag-hora"></div></div>
+      <div class="form-group"><label class="form-label">Cliente</label><input type="text" class="form-input" id="ag-cliente"></div>
+      <div class="form-group"><label class="form-label">Tipo</label><select class="form-select" id="ag-tipo"><option>Reunião de apresentação</option><option>Prazo de entrega</option><option>Envio de briefing</option><option>Outro</option></select></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="fecharModal('modal-agenda')">Cancelar</button><button class="btn btn-gold" onclick="salvarAgenda()">Salvar</button></div>
+  </div>
+</div>
+
+<div class="loading-overlay" id="loading">
+  <div class="dots"><span></span><span></span><span></span></div>
+  <div class="loading-txt" id="loading-txt">Processando...</div>
+  <div class="loading-step" id="loading-step">Aguarde</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════ STORAGE ══════════
+const S={
+  get:k=>{try{return JSON.parse(localStorage.getItem('ppp_'+k)||'null');}catch{return null;}},
+  set:(k,v)=>localStorage.setItem('ppp_'+k,JSON.stringify(v)),
+  clientes:()=>S.get('clientes')||[],
+  agenda:()=>S.get('agenda')||[],
+  config:()=>S.get('config')||{nome:'Paula Andreza',ig:'@paulaandresasm',wp:'(69) 99367-5655',email:'paulaandrezasm@gmail.com',metaC:8,valor:1297}
+};
+
+let clienteAtual=null;
+let filtroStatus='';
+
+// ══════════ ARQUETIPOS DATA ══════════
+const ARQS={
+  cuidador:{nome:'Cuidador',desc:'Coloca as necessidades dos outros acima das suas. Comunica com acolhimento, empatia e gentileza.',exemplos:'Johnson & Johnson, Enfermeira em Grey\'s Anatomy, Médicos Sem Fronteiras',tags:['Acolhimento','Empatia','Proteção','Serviço'],tom:'Próximo, caloroso, empático. Usa "nós" mais que "eu". Linguagem simples e acessível.'},
+  governante:{nome:'Governante',desc:'Transmite autoridade, controle e liderança. Presença que impõe respeito.',exemplos:'Rolex, Louis Vuitton, Miranda Priestly (O Diabo Veste Prada)',tags:['Autoridade','Liderança','Controle','Status'],tom:'Formal, preciso, confiante. Afirmativo. Nunca pede — declara.'},
+  sabio:{nome:'Sábio',desc:'Referência em conhecimento. Fala com embasamento, dados e clareza.',exemplos:'Google, TED Talks, Hermione Granger, Yoda',tags:['Conhecimento','Verdade','Clareza','Credibilidade'],tom:'Analítico, embasado, didático. Usa dados e referências. Explica o porquê.'},
+  heroi:{nome:'Herói',desc:'Supera obstáculos e inspira outros a fazerem o mesmo. Foco em conquista e resultado.',exemplos:'Nike, Tony Stark, Cruz Vermelha',tags:['Coragem','Superação','Resultado','Inspiração'],tom:'Motivacional, enérgico, direto. Foco na transformação possível.'},
+  foradlei:{nome:'Fora da Lei',desc:'Questiona o convencional. Faz diferente porque acredita que o padrão não serve.',exemplos:'Anitta, Harley-Davidson, Breaking Bad',tags:['Ruptura','Revolução','Ousadia','Disrupção'],tom:'Provocador, direto, irreverente. Questiona o status quo abertamente.'},
+  magico:{nome:'Mágico',desc:'Transforma. Faz o impossível parecer possível. O cliente sai diferente de como entrou.',exemplos:'Disney, Apple, Gandalf',tags:['Transformação','Visão','Encantamento','Possibilidade'],tom:'Inspirador, visionário, emotivo. Fala de sonhos e possibilidades.'},
+  caraComum:{nome:'Cara Comum',desc:'Próximo, acessível, real. As pessoas se identificam porque ele parece uma delas.',exemplos:'Instagram de amiga especialista, comunicadores populares',tags:['Conexão','Autenticidade','Pertencimento','Simplicidade'],tom:'Informal, próximo, sem jargões. Como uma conversa de WhatsApp.'},
+  amante:{nome:'Amante',desc:'Vende beleza, prazer e relacionamento. Cria desejo e experiências sensoriais.',exemplos:'Dior, Häagen-Dazs, Victoria\'s Secret',tags:['Beleza','Paixão','Sensorialidade','Desejo'],tom:'Sensorial, sedutor, elegante. Evoca emoções e experiências.'},
+  bobo:{nome:'Bobo da Corte',desc:'Usa humor e leveza para comunicar. Torna assuntos sérios acessíveis.',exemplos:'Fanta, Ben & Jerry\'s, comunicadores humorísticos',tags:['Alegria','Humor','Leveza','Entretenimento'],tom:'Leve, bem-humorado, criativo. Não leva muito a sério — mas entrega valor.'},
+  explorador:{nome:'Explorador',desc:'Busca liberdade, aventura e descoberta. Questiona limites e vai além.',exemplos:'Jeep, Patagonia, National Geographic',tags:['Liberdade','Aventura','Descoberta','Autenticidade'],tom:'Inspirador, independente, curioso. Convida para a jornada.'},
+  inocente:{nome:'Inocente',desc:'Autenticidade, otimismo e simplicidade. Acredita no bem e na bondade.',exemplos:'Dove, Natura, conteúdos de bem-estar',tags:['Autenticidade','Otimismo','Simplicidade','Pureza'],tom:'Simples, positivo, esperançoso. Sem ironia ou complexidade.'},
+  criador:{nome:'Criador',desc:'Inovador e expressivo. Tem um jeito próprio de fazer tudo.',exemplos:'Adobe, LEGO, Frida Kahlo, Steve Jobs',tags:['Criatividade','Originalidade','Expressão','Inovação'],tom:'Criativo, inspirador, original. Mostra o processo e a personalidade.'}
+};
+
+// ══════════ NAVEGAÇÃO ══════════
+function navTo(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const map={dashboard:0,clientes:1,agenda:2,arquetipos:3,config:4};
+  if(map[id]!==undefined) document.querySelectorAll('.nav-item')[map[id]].classList.add('active');
+  if(id==='dashboard') renderDashboard();
+  if(id==='clientes') renderListaClientes();
+  if(id==='agenda') renderAgenda();
+  if(id==='arquetipos') renderArquetipos();
+}
+
+// ══════════ DASHBOARD ══════════
+function renderDashboard(){
+  const cfg=S.config();
+  const clientes=S.clientes();
+  const agora=new Date();
+  document.getElementById('dash-data').textContent=agora.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+  document.getElementById('topbar-user').textContent=cfg.nome;
+  const mes=agora.getMonth(),ano=agora.getFullYear();
+  const deste=clientes.filter(c=>{const d=new Date(c.criado||0);return d.getMonth()===mes&&d.getFullYear()===ano;});
+  const receita=deste.reduce((a,c)=>a+(parseInt(c.valor)||parseInt(cfg.valor)||1297),0);
+  const totalContratado=deste.reduce((a,c)=>a+(parseFloat(c.valor)||parseInt(cfg.valor)||1297),0);
+  const recebido=deste.filter(c=>c.statusPag==='pago').reduce((a,c)=>a+(parseFloat(c.valorLiquido)||parseFloat(c.valor)||parseInt(cfg.valor)||1297),0);
+  const aReceber=deste.filter(c=>c.statusPag!=='pago').reduce((a,c)=>a+(parseFloat(c.valor)||parseInt(cfg.valor)||1297),0);
+  document.getElementById('dash-total').textContent=deste.length;
+  document.getElementById('dash-andamento').textContent=clientes.filter(c=>c.status==='andamento').length;
+  document.getElementById('dash-concluido').textContent=deste.filter(c=>c.status==='concluido').length;
+  document.getElementById('dash-total-contratado').textContent='R$'+Math.round(totalContratado).toLocaleString('pt-BR');
+  document.getElementById('dash-recebido').textContent='R$'+Math.round(recebido).toLocaleString('pt-BR');
+  document.getElementById('dash-a-receber').textContent='R$'+Math.round(aReceber).toLocaleString('pt-BR');
+  document.getElementById('dash-meta-c').textContent='Meta: '+cfg.metaC;
+  document.getElementById('dash-meta-r').textContent='Meta: R$'+(cfg.metaC*(parseInt(cfg.valor)||1297)).toLocaleString('pt-BR');
+  const el=document.getElementById('dash-lista');
+  const recentes=clientes.slice(-6).reverse();
+  if(!recentes.length){el.innerHTML='<div class="empty"><div class="empty-icon">👩‍⚕️</div><p>Nenhuma cliente ainda.<br>Clique em Nova cliente para começar.</p></div>';return;}
+  el.innerHTML=recentes.map(c=>rowHTML(c)).join('');
+}
+
+function rowHTML(c){
+  const ini=c.nome.split(' ').slice(0,2).map(p=>p[0]||'').join('').toUpperCase();
+  const bCls={novo:'badge-novo',andamento:'badge-andamento',concluido:'badge-concluido'};
+  const bLbl={novo:'Novo',andamento:'Em andamento',concluido:'Concluído'};
+  return `<div class="cliente-row" onclick="abrirFicha('${c.id}')">
+    <div class="avatar">${ini}</div>
+    <div class="cliente-info"><div class="cliente-nome">${c.nome}</div><div class="cliente-esp">${c.esp||''}${c.cidade?' · '+c.cidade:''}</div></div>
+    <span class="badge ${bCls[c.status]||'badge-novo'}">${bLbl[c.status]||'Novo'}</span>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--cinza)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+  </div>`;
+}
+
+// ══════════ CLIENTES ══════════
+function renderListaClientes(filtro=''){
+  let clientes=S.clientes();
+  if(filtro) clientes=clientes.filter(c=>c.nome.toLowerCase().includes(filtro.toLowerCase())||(c.esp||'').toLowerCase().includes(filtro.toLowerCase()));
+  if(filtroStatus) clientes=clientes.filter(c=>c.status===filtroStatus);
+  document.getElementById('clientes-count').textContent=clientes.length+' cliente'+(clientes.length!==1?'s':'');
+  const el=document.getElementById('lista-clientes');
+  if(!clientes.length){el.innerHTML='<div class="empty"><div class="empty-icon">👩‍⚕️</div><p>Nenhuma cliente encontrada.</p></div>';return;}
+  el.innerHTML=clientes.map(c=>rowHTML(c)).join('');
+}
+function filtrarClientes(v){renderListaClientes(v);}
+function filtrarStatus(v){filtroStatus=v;renderListaClientes();}
+
+function abrirFicha(id){
+  clienteAtual=S.clientes().find(c=>c.id===id);
+  if(!clienteAtual) return;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-ficha').classList.add('active');
+  switchTab(document.querySelector('.tab-bar .tab'),'tab-visao');
+  renderFicha(clienteAtual);
+}
+
+function renderFicha(c){
+  const ini=c.nome.split(' ').slice(0,2).map(p=>p[0]||'').join('').toUpperCase();
+  document.getElementById('ficha-avatar').textContent=ini;
+  document.getElementById('ficha-nome').textContent=c.nome;
+  document.getElementById('ficha-esp').textContent=[c.esp,c.cidade,c.tel].filter(Boolean).join(' · ');
+  const bCls={novo:'badge-novo',andamento:'badge-andamento',concluido:'badge-concluido'};
+  const bLbl={novo:'Novo',andamento:'Em andamento',concluido:'Concluído'};
+  const badge=document.getElementById('ficha-badge');
+  badge.textContent=bLbl[c.status]||'Novo';
+  badge.className='badge '+(bCls[c.status]||'badge-novo');
+  const bio=c.bioResultado||{};
+  const est=c.estrategia||{};
+  document.getElementById('ficha-mini-grid').innerHTML=`
+    <div class="mini-card"><div class="mini-label">Arquétipo Dominante</div><div class="mini-val">${bio.arqDominante||est.arqDominante||'—'}</div></div>
+    <div class="mini-card"><div class="mini-label">Posicionamento</div><div class="mini-val">${bio.posicionamento||est.posicionamento||'—'}</div></div>
+    <div class="mini-card"><div class="mini-label">Tom de Voz</div><div class="mini-val">${bio.tom||est.tom||'—'}</div></div>
+    <div class="mini-card"><div class="mini-label">Prazo</div><div class="mini-val">${c.prazo?new Date(c.prazo+'T00:00:00').toLocaleDateString('pt-BR'):'—'}</div></div>`;
+  const pagNomes={pix:'Pix à vista',credito2:'Cartão 2x',credito3:'Cartão 3x',outro:'Outro'};
+  const pagSt={pendente:'⏳ Pendente',parcial:'⚠️ Parcial',pago:'✓ Pago'};
+  const pagStCor={pendente:'#92400e',parcial:'#1e40af',pago:'#166534'};
+  document.getElementById('ficha-info').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:13px;">
+      <div><span style="color:var(--cinza);">WhatsApp</span><br>${c.tel||'—'}</div>
+      <div><span style="color:var(--cinza);">Instagram</span><br>${c.ig||'—'}</div>
+      <div><span style="color:var(--cinza);">Valor contratado</span><br><strong>R$ ${parseFloat(c.valor||0).toLocaleString('pt-BR')}</strong></div>
+      <div><span style="color:var(--cinza);">Forma de pagamento</span><br>${pagNomes[c.pagamento||'pix']||'Pix'}</div>
+      <div><span style="color:var(--cinza);">Valor líquido (após taxa)</span><br><strong style="color:#166534;">R$ ${parseFloat(c.valorLiquido||c.valor||0).toLocaleString('pt-BR')}</strong></div>
+      <div><span style="color:var(--cinza);">Status do pagamento</span><br><strong style="color:${pagStCor[c.statusPag||'pendente']}">${pagSt[c.statusPag||'pendente']}</strong></div>
+      <div><span style="color:var(--cinza);">Prazo de entrega</span><br>${c.prazo?new Date(c.prazo+'T00:00:00').toLocaleDateString('pt-BR'):'—'}</div>
+      <div><span style="color:var(--cinza);">Status</span><br>${bLbl[c.status]||'Novo'}</div>
+      ${c.trello?`<div style="grid-column:1/-1;"><span style="color:var(--cinza);">Trello</span><br><a href="${c.trello}" target="_blank" style="color:var(--ouro);">${c.trello}</a></div>`:''}
+      ${c.drive?`<div style="grid-column:1/-1;"><span style="color:var(--cinza);">Google Drive</span><br><a href="${c.drive}" target="_blank" style="color:var(--ouro);">${c.drive}</a></div>`:''}
+    </div>`;
+  const btnT=document.getElementById('btn-trello');
+  const btnD=document.getElementById('btn-drive');
+  btnT.onclick=c.trello?()=>window.open(c.trello,'_blank'):null;
+  btnT.disabled=!c.trello;
+  btnD.onclick=c.drive?()=>window.open(c.drive,'_blank'):null;
+  btnD.disabled=!c.drive;
+  document.getElementById('notas-textarea').value=c.notas||'';
+  renderChecklist();
+  renderBriefingForm();
+  renderBioPerguntas();
+  renderDocs();
+  renderIAResultado();
+  restaurarBioRespostas();
+}
+
+// ══════════ CHECKLIST ══════════
+const CHECKLIST_ITEMS=[
+  {id:'briefing',lbl:'Briefing enviado e respondido',fase:'Início'},
+  {id:'pagamento',lbl:'Pagamento confirmado via Pix',fase:'Início'},
+  {id:'acesso',lbl:'Acesso ao Instagram concedido (Meta Business Suite)',fase:'Início'},
+  {id:'videos',lbl:'Vídeos e rascunhos de roteiro recebidos',fase:'Coleta'},
+  {id:'bioimpedancia',lbl:'Bioimpedância preenchida e gerada',fase:'Análise'},
+  {id:'analise_perfil',lbl:'Análise do perfil atual concluída',fase:'Análise'},
+  {id:'estrategia_ia',lbl:'Estratégia completa gerada pela IA',fase:'Produção'},
+  {id:'conteudos',lbl:'12 conteúdos planejados e revisados',fase:'Produção'},
+  {id:'roteiros',lbl:'3 roteiros de vídeo criados e revisados',fase:'Produção'},
+  {id:'templates',lbl:'Templates do Canva selecionados ou criados',fase:'Produção'},
+  {id:'drive_organizado',lbl:'Pasta do Google Drive organizada',fase:'Entrega'},
+  {id:'trello_montado',lbl:'Trello da cliente montado',fase:'Entrega'},
+  {id:'reuniao',lbl:'Reunião de apresentação realizada',fase:'Entrega'},
+  {id:'entrega_final',lbl:'Material final entregue',fase:'Entrega'},
+  {id:'telegram',lbl:'Cliente adicionada ao grupo do Telegram',fase:'Pós-entrega'},
+];
+
+function renderChecklist(){
+  if(!clienteAtual) return;
+  const checks=clienteAtual.checklist||{};
+  const total=CHECKLIST_ITEMS.length;
+  const feitos=CHECKLIST_ITEMS.filter(i=>checks[i.id]).length;
+  const pct=Math.round(feitos/total*100);
+  document.getElementById('checklist-progress').style.width=pct+'%';
+  document.getElementById('checklist-pct').textContent=pct+'% concluído ('+feitos+'/'+total+')';
+  document.getElementById('checklist-lista').innerHTML=CHECKLIST_ITEMS.map(item=>`
+    <div class="checklist-item ${checks[item.id]?'done':''}" onclick="toggleCheck('${item.id}')">
+      <div class="check-box">${checks[item.id]?'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>':''}</div>
+      <div class="check-lbl">${item.lbl}</div>
+      <div class="check-fase">${item.fase}</div>
+    </div>`).join('');
+}
+
+function toggleCheck(id){
+  if(!clienteAtual) return;
+  const clientes=S.clientes();
+  const c=clientes.find(x=>x.id===clienteAtual.id);
+  if(!c.checklist) c.checklist={};
+  c.checklist[id]=!c.checklist[id];
+  S.set('clientes',clientes);
+  clienteAtual=c;
+  renderChecklist();
+}
+
+// ══════════ BRIEFING ══════════
+function renderBriefingForm(){
+  document.getElementById('briefing-form').innerHTML=`
+  <div class="secao-bloco"><div class="secao-hdr"><div class="secao-num">1</div><div class="secao-titulo">Sobre a Cliente</div></div>
+  <div class="secao-body">
+    <div class="form-group"><label class="form-label">Nome e especialidade</label><input type="text" class="form-input" id="b-esp" placeholder="Ex: Dra. Maria — Ginecologista especializada em saúde feminina"></div>
+    <div class="form-group"><label class="form-label">Perfil do Instagram (@ e situação atual)</label><textarea class="form-textarea" id="b-perfil" rows="2" placeholder="Ex: @dra.maria — 1.200 seguidores, bio confusa, sem identidade visual..."></textarea></div>
+    <div class="form-group"><label class="form-label">Métricas atuais</label><textarea class="form-textarea" id="b-metricas" rows="2" placeholder="Ex: Engajamento 3%, posts com 60 curtidas, stories com 120 visualizações..."></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Público que atende hoje</label><input type="text" class="form-input" id="b-publico-atual" placeholder="Ex: Mulheres 30-50 anos, classe média-alta"></div>
+      <div class="form-group"><label class="form-label">Público que quer alcançar</label><input type="text" class="form-input" id="b-publico-desejado" placeholder="Ex: Mulheres executivas 35-55 anos, alto ticket"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Objetivo principal no Instagram</label>
+      <select class="form-select" id="b-objetivo"><option>Atrair novos pacientes / clientes</option><option>Construir autoridade na especialidade</option><option>Vender serviços de alto ticket</option><option>Humanizar o perfil e criar conexão</option><option>Crescer seguidores e visibilidade</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">Principais serviços e preços</label><textarea class="form-textarea" id="b-servicos" rows="2" placeholder="Ex: Consulta presencial R$350, telemedicina R$250, programa 3 meses R$1.800..."></textarea></div>
+    <div class="form-group"><label class="form-label">Principais diferenciais em relação à concorrência</label><textarea class="form-textarea" id="b-diferenciais" rows="2" placeholder="Ex: Único especialista da cidade, abordagem integrativa, 15 anos de experiência..."></textarea></div>
+  </div></div>
+  <div class="secao-bloco"><div class="secao-hdr"><div class="secao-num">2</div><div class="secao-titulo">Personalidade e Estilo</div></div>
+  <div class="secao-body">
+    <div class="form-group"><label class="form-label">Como ela se descreve quando fala do trabalho?</label>
+    <div class="opcoes"><label class="opcao"><input type="radio" name="b_identidade" value="tecnica"><div class="dot"></div><span class="opcao-lbl">Usa termos técnicos e especializados</span></label><label class="opcao"><input type="radio" name="b_identidade" value="humana"><div class="dot"></div><span class="opcao-lbl">Fala do impacto que causa nas pessoas</span></label><label class="opcao"><input type="radio" name="b_identidade" value="pratica"><div class="dot"></div><span class="opcao-lbl">Direta e objetiva, sem floreios</span></label><label class="opcao"><input type="radio" name="b_identidade" value="inspiradora"><div class="dot"></div><span class="opcao-lbl">Com entusiasmo e missão</span></label></div></div>
+    <div class="form-group"><label class="form-label">O que a motiva a trabalhar?</label>
+    <div class="opcoes"><label class="opcao"><input type="radio" name="b_motivacao" value="reconhecimento"><div class="dot"></div><span class="opcao-lbl">Ser reconhecida como referência na área</span></label><label class="opcao"><input type="radio" name="b_motivacao" value="impacto"><div class="dot"></div><span class="opcao-lbl">Ver transformação real nas pessoas</span></label><label class="opcao"><input type="radio" name="b_motivacao" value="liberdade"><div class="dot"></div><span class="opcao-lbl">Liberdade e autonomia profissional</span></label><label class="opcao"><input type="radio" name="b_motivacao" value="inovar"><div class="dot"></div><span class="opcao-lbl">Inovar e fazer diferente</span></label><label class="opcao"><input type="radio" name="b_motivacao" value="pertencer"><div class="dot"></div><span class="opcao-lbl">Fazer parte de algo maior</span></label></div></div>
+    <div class="form-group"><label class="form-label">Como ela reage diante de situações difíceis?</label>
+    <div class="opcoes"><label class="opcao"><input type="radio" name="b_reacao" value="lidera"><div class="dot"></div><span class="opcao-lbl">Assume o controle e lidera</span></label><label class="opcao"><input type="radio" name="b_reacao" value="acolhe"><div class="dot"></div><span class="opcao-lbl">Acolhe primeiro, resolve com calma</span></label><label class="opcao"><input type="radio" name="b_reacao" value="analisa"><div class="dot"></div><span class="opcao-lbl">Para, analisa, busca o caminho lógico</span></label><label class="opcao"><input type="radio" name="b_reacao" value="questiona"><div class="dot"></div><span class="opcao-lbl">Questiona o padrão e busca solução diferente</span></label></div></div>
+    <div class="form-group"><label class="form-label">Como ela se veste e se apresenta?</label>
+    <div class="opcoes"><label class="opcao"><input type="radio" name="b_estilo" value="elegante"><div class="dot"></div><span class="opcao-lbl">Elegante e sóbria — transmite autoridade</span></label><label class="opcao"><input type="radio" name="b_estilo" value="acessivel"><div class="dot"></div><span class="opcao-lbl">Acessível e próxima — alguém familiar</span></label><label class="opcao"><input type="radio" name="b_estilo" value="criativo"><div class="dot"></div><span class="opcao-lbl">Criativa e expressiva — personalidade marcante</span></label><label class="opcao"><input type="radio" name="b_estilo" value="minimalista"><div class="dot"></div><span class="opcao-lbl">Minimalista — menos é mais</span></label></div></div>
+    <div class="form-group"><label class="form-label">O que ela quer que digam dela?</label>
+    <div class="opcoes"><label class="opcao"><input type="radio" name="b_reputacao" value="melhor"><div class="dot"></div><span class="opcao-lbl">"É a melhor da área — super especializada"</span></label><label class="opcao"><input type="radio" name="b_reputacao" value="humana"><div class="dot"></div><span class="opcao-lbl">"Me entendeu de verdade — fui me sentindo cuidada"</span></label><label class="opcao"><input type="radio" name="b_reputacao" value="diferente"><div class="dot"></div><span class="opcao-lbl">"É completamente diferente dos outros"</span></label><label class="opcao"><input type="radio" name="b_reputacao" value="resultado"><div class="dot"></div><span class="opcao-lbl">"Resolveu o que ninguém tinha conseguido"</span></label><label class="opcao"><input type="radio" name="b_reputacao" value="exclusiva"><div class="dot"></div><span class="opcao-lbl">"É difícil conseguir — vale cada centavo"</span></label></div></div>
+    <div class="form-group"><label class="form-label">Como ela fala em áudios e vídeos?</label>
+    <div class="opcoes"><label class="opcao"><input type="radio" name="b_fala" value="formal"><div class="dot"></div><span class="opcao-lbl">Formal e estruturada</span></label><label class="opcao"><input type="radio" name="b_fala" value="proxima"><div class="dot"></div><span class="opcao-lbl">Próxima e natural — como com uma amiga</span></label><label class="opcao"><input type="radio" name="b_fala" value="didatica"><div class="dot"></div><span class="opcao-lbl">Didática — ensina passo a passo</span></label><label class="opcao"><input type="radio" name="b_fala" value="direta"><div class="dot"></div><span class="opcao-lbl">Direta — vai direto ao ponto</span></label><label class="opcao"><input type="radio" name="b_fala" value="entusiasta"><div class="dot"></div><span class="opcao-lbl">Entusiasta e expressiva</span></label></div></div>
+  </div></div>
+  <div class="secao-bloco"><div class="secao-hdr"><div class="secao-num">3</div><div class="secao-titulo">Conteúdo e Roteiros</div></div>
+  <div class="secao-body">
+    <div class="form-group"><label class="form-label">Rascunhos de roteiro ou ideias de conteúdo que ela já tem</label><textarea class="form-textarea" id="b-rascunhos" rows="4" placeholder="Cole aqui os rascunhos, ideias soltas, temas que ela quer falar..."></textarea></div>
+    <div class="form-group"><label class="form-label">Referência de comunicação que ela admira</label><input type="text" class="form-input" id="b-referencia" placeholder="Ex: Admira a clareza de fulano, a proximidade de ciclana..."></div>
+    <div class="form-group"><label class="form-label">Observações adicionais</label><textarea class="form-textarea" id="b-obs" rows="3" placeholder="Medos, bloqueios, situação atual, expectativas..."></textarea></div>
+  </div></div>`;
+  bindOpcoes('briefing-form');
+  restaurarBriefing();
+}
+
+function bindOpcoes(containerId){
+  const el=document.getElementById(containerId);
+  if(!el) return;
+  el.querySelectorAll('.opcao').forEach(op=>{
+    op.addEventListener('click',function(){
+      const inp=this.querySelector('input');
+      document.querySelectorAll(`input[name="${inp.name}"]`).forEach(i=>i.closest('.opcao').classList.remove('selected'));
+      inp.checked=true;this.classList.add('selected');
+      salvarBriefing();
+    });
+  });
+}
+
+function gV(n){const el=document.querySelector(`input[name="${n}"]:checked`);return el?el.value:'';}
+
+function salvarBriefing(){
+  if(!clienteAtual) return;
+  const b={
+    'b-esp':document.getElementById('b-esp')?.value||'',
+    'b-perfil':document.getElementById('b-perfil')?.value||'',
+    'b-metricas':document.getElementById('b-metricas')?.value||'',
+    'b-publico-atual':document.getElementById('b-publico-atual')?.value||'',
+    'b-publico-desejado':document.getElementById('b-publico-desejado')?.value||'',
+    'b-objetivo':document.getElementById('b-objetivo')?.value||'',
+    'b-servicos':document.getElementById('b-servicos')?.value||'',
+    'b-diferenciais':document.getElementById('b-diferenciais')?.value||'',
+    'b-rascunhos':document.getElementById('b-rascunhos')?.value||'',
+    'b-referencia':document.getElementById('b-referencia')?.value||'',
+    'b-obs':document.getElementById('b-obs')?.value||'',
+    b_identidade:gV('b_identidade'),b_motivacao:gV('b_motivacao'),
+    b_reacao:gV('b_reacao'),b_estilo:gV('b_estilo'),
+    b_reputacao:gV('b_reputacao'),b_fala:gV('b_fala')
+  };
+  const clientes=S.clientes();
+  const c=clientes.find(x=>x.id===clienteAtual.id);
+  c.briefing=b;S.set('clientes',clientes);clienteAtual=c;
+}
+
+document.addEventListener('input',e=>{
+  if(e.target.closest('#briefing-form')) salvarBriefing();
+});
+
+function restaurarBriefing(){
+  if(!clienteAtual?.briefing) return;
+  const b=clienteAtual.briefing;
+  ['b-esp','b-perfil','b-metricas','b-publico-atual','b-publico-desejado','b-servicos','b-diferenciais','b-rascunhos','b-referencia','b-obs'].forEach(id=>{
+    const el=document.getElementById(id);if(el&&b[id]) el.value=b[id];
+  });
+  const sel=document.getElementById('b-objetivo');
+  if(sel&&b['b-objetivo']) sel.value=b['b-objetivo'];
+  ['b_identidade','b_motivacao','b_reacao','b_estilo','b_reputacao','b_fala'].forEach(n=>{
+    if(b[n]){const inp=document.querySelector(`input[name="${n}"][value="${b[n]}"]`);if(inp){inp.checked=true;inp.closest('.opcao').classList.add('selected');}}
+  });
+}
+
+// ══════════ BIOIMPEDÂNCIA ══════════
+function renderBioPerguntas(){
+  document.getElementById('bio-perguntas').innerHTML=`
+  <div class="secao-bloco"><div class="secao-hdr"><div class="secao-num">1</div><div class="secao-titulo">Identidade e Essência</div></div>
+  <div class="secao-body">
+    <div class="form-group"><label class="form-label">Como ela se descreve?</label>
+    <div class="opcoes"><label class="opcao"><input type="radio" name="bio_identidade" value="tecnica"><div class="dot"></div><span class="opcao-lbl">Usa termos técnicos e especializados</span></label><label class="opcao"><input type="radio" name="bio_identidade" value="humana"><div class="dot"></div><span class="opcao-lbl">Fala do impacto que causa nas pessoas</span></label><label class="opcao"><input type="radio" name="bio_identidade" value="pratica"><div class="dot"></div><span class="opcao-lbl">Direta e objetiva</span></label><label class="opcao"><input type="radio" name="bio_identidade" value="inspiradora"><div class="dot"></div><span class="opcao-lbl">Com entusiasmo e missão</span></label></div></div>
+    <div class="form-group"><label class="form-label">O que a motiva?</label>
+    <div class="opcoes"><label class="opcao"><input type="radio" name="bio_motivacao" value="reconhecimento"><div class="dot"></div><span class="opcao-lbl">Ser reconhecida como referência</span></label><label class="opcao"><input type="radio" name="bio_motivacao" value="impacto"><div class="dot"></div><span class="opcao-lbl">Ver transformação nas pessoas</span></label><label class="opcao"><input type="radio" name="bio_motivacao" value="liberdade"><div class="dot"></div><span class="opcao-lbl">Liberdade e autonomia</span></label><label class="opcao"><input type="radio" name="bio_motivacao" value="inovar"><div class="dot"></div><span class="opcao-lbl">Inovar e fazer diferente</span></label><label class="opcao"><input type="radio" name="bio_motivacao" value="pertencer"><div class="dot"></div><span class="opcao-lbl">Fazer parte de algo maior</span></label></div></div>
+  </div></div>
+  <div class="secao-bloco"><div class="secao-hdr"><div class="secao-num">2</div><div class="secao-titulo">Comportamento e Estilo</div></div>
+  <div class="secao-body">
+    <div class="form-group"><label class="form-label">Como reage a situações difíceis?</label>
+    <div class="opcoes"><label class="opcao"><input type="radio" name="bio_reacao" value="lidera"><div class="dot"></div><span class="opcao-lbl">Assume o controle e lidera</span></label><label class="opcao"><input type="radio" name="bio_reacao" value="acolhe"><div class="dot"></div><span class="opcao-lbl">Acolhe primeiro, resolve com calma</span></label><label class="opcao"><input type="radio" name="bio_reacao" value="analisa"><div class="dot"></div><span class="opcao-lbl">Analisa e busca o caminho lógico</span></label><label class="opcao"><input type="radio" name="bio_reacao" value="questiona"><div class="dot"></div><span class="opcao-lbl">Questiona o padrão e busca solução diferente</span></label><label class="opcao"><input type="radio" name="bio_reacao" value="inspira"><div class="dot"></div><span class="opcao-lbl">Inspira e encontra o lado positivo</span></label></div></div>
+    <div class="form-group"><label class="form-label">Como se veste e se apresenta?</label>
+    <div class="opcoes"><label class="opcao"><input type="radio" name="bio_estilo" value="elegante"><div class="dot"></div><span class="opcao-lbl">Elegante e sóbria — transmite autoridade</span></label><label class="opcao"><input type="radio" name="bio_estilo" value="acessivel"><div class="dot"></div><span class="opcao-lbl">Acessível e próxima</span></label><label class="opcao"><input type="radio" name="bio_estilo" value="criativo"><div class="dot"></div><span class="opcao-lbl">Criativa e expressiva</span></label><label class="opcao"><input type="radio" name="bio_estilo" value="minimalista"><div class="dot"></div><span class="opcao-lbl">Minimalista — menos é mais</span></label></div></div>
+  </div></div>
+  <div class="secao-bloco"><div class="secao-hdr"><div class="secao-num">3</div><div class="secao-titulo">Reputação e Público</div></div>
+  <div class="secao-body">
+    <div class="form-group"><label class="form-label">O que ela quer que digam dela?</label>
+    <div class="opcoes"><label class="opcao"><input type="radio" name="bio_reputacao" value="melhor"><div class="dot"></div><span class="opcao-lbl">"É a melhor da área — super especializada"</span></label><label class="opcao"><input type="radio" name="bio_reputacao" value="humana"><div class="dot"></div><span class="opcao-lbl">"Me entendeu de verdade"</span></label><label class="opcao"><input type="radio" name="bio_reputacao" value="diferente"><div class="dot"></div><span class="opcao-lbl">"É completamente diferente dos outros"</span></label><label class="opcao"><input type="radio" name="bio_reputacao" value="resultado"><div class="dot"></div><span class="opcao-lbl">"Resolveu o que ninguém tinha conseguido"</span></label><label class="opcao"><input type="radio" name="bio_reputacao" value="exclusiva"><div class="dot"></div><span class="opcao-lbl">"É difícil conseguir — vale cada centavo"</span></label></div></div>
+    <div class="form-group"><label class="form-label">Prefere ser conhecida por?</label>
+    <div class="opcoes"><label class="opcao"><input type="radio" name="bio_qualidade" value="tecnica"><div class="dot"></div><span class="opcao-lbl">Ser a melhor tecnicamente</span></label><label class="opcao"><input type="radio" name="bio_qualidade" value="humana2"><div class="dot"></div><span class="opcao-lbl">Ser a mais humana e acolhedora</span></label><label class="opcao"><input type="radio" name="bio_qualidade" value="inovadora"><div class="dot"></div><span class="opcao-lbl">Ser inovadora — faz diferente</span></label><label class="opcao"><input type="radio" name="bio_qualidade" value="exclusiva2"><div class="dot"></div><span class="opcao-lbl">Ser exclusiva — alta demanda, alto padrão</span></label></div></div>
+  </div></div>
+  <div class="secao-bloco"><div class="secao-hdr"><div class="secao-num">4</div><div class="secao-titulo">Tom e Comunicação</div></div>
+  <div class="secao-body">
+    <div class="form-group"><label class="form-label">Como fala em áudios e vídeos?</label>
+    <div class="opcoes"><label class="opcao"><input type="radio" name="bio_fala" value="formal"><div class="dot"></div><span class="opcao-lbl">Formal e estruturada</span></label><label class="opcao"><input type="radio" name="bio_fala" value="proxima"><div class="dot"></div><span class="opcao-lbl">Próxima e natural — como com uma amiga</span></label><label class="opcao"><input type="radio" name="bio_fala" value="didatica"><div class="dot"></div><span class="opcao-lbl">Didática — ensina passo a passo</span></label><label class="opcao"><input type="radio" name="bio_fala" value="direta"><div class="dot"></div><span class="opcao-lbl">Direta — vai direto ao ponto</span></label><label class="opcao"><input type="radio" name="bio_fala" value="entusiasta"><div class="dot"></div><span class="opcao-lbl">Entusiasta e expressiva</span></label></div></div>
+  </div></div>`;
+  bindOpcoes('tab-bio');
+}
+
+function restaurarBioRespostas(){
+  if(!clienteAtual?.bioRespostas) return;
+  const r=clienteAtual.bioRespostas;
+  ['bio_identidade','bio_motivacao','bio_reacao','bio_estilo','bio_reputacao','bio_qualidade','bio_fala'].forEach(n=>{
+    if(r[n]){const inp=document.querySelector(`input[name="${n}"][value="${r[n]}"]`);if(inp){inp.checked=true;inp.closest('.opcao').classList.add('selected');}}
+  });
+  if(r['bio-metricas']){const el=document.getElementById('bio-metricas');if(el) el.value=r['bio-metricas'];}
+}
+
+// LÓGICA BIOIMPEDÂNCIA
+function calcBio(r){
+  const sc={cuidador:0,governante:0,sabio:0,heroi:0,foradlei:0,magico:0,caraComum:0,criador:0};
+  const add=(k,v)=>{if(sc[k]!==undefined)sc[k]+=v;};
+  const {motivacao,reacao,estilo,reputacao,qualidade,fala}=r;
+  if(motivacao==='impacto'){add('cuidador',3);add('heroi',1);}
+  if(motivacao==='reconhecimento'){add('governante',3);add('sabio',2);}
+  if(motivacao==='liberdade'){add('foradlei',3);add('criador',2);}
+  if(motivacao==='inovar'){add('foradlei',2);add('magico',2);add('criador',1);}
+  if(motivacao==='pertencer'){add('caraComum',3);add('cuidador',1);}
+  if(reacao==='lidera'){add('governante',3);add('heroi',1);}
+  if(reacao==='acolhe'){add('cuidador',3);add('caraComum',1);}
+  if(reacao==='analisa'){add('sabio',3);add('governante',1);}
+  if(reacao==='questiona'){add('foradlei',3);add('magico',1);}
+  if(reacao==='inspira'){add('heroi',2);add('magico',2);add('caraComum',1);}
+  if(estilo==='elegante'){add('governante',2);add('sabio',1);}
+  if(estilo==='acessivel'){add('caraComum',2);add('cuidador',2);}
+  if(estilo==='criativo'){add('criador',3);add('magico',1);}
+  if(estilo==='minimalista'){add('sabio',1);add('governante',1);add('criador',1);}
+  if(reputacao==='melhor'){add('governante',2);add('sabio',2);}
+  if(reputacao==='humana'){add('cuidador',3);add('caraComum',2);}
+  if(reputacao==='diferente'){add('foradlei',3);add('criador',2);}
+  if(reputacao==='resultado'){add('heroi',3);add('magico',2);}
+  if(reputacao==='exclusiva'){add('governante',3);}
+  if(qualidade==='tecnica'){add('sabio',2);add('governante',1);}
+  if(qualidade==='humana2'){add('cuidador',3);}
+  if(qualidade==='inovadora'){add('foradlei',2);add('criador',2);add('magico',1);}
+  if(qualidade==='exclusiva2'){add('governante',3);}
+  const ord=Object.entries(sc).sort((a,b)=>b[1]-a[1]);
+  const dom=ord[0][0],sust=ord[1][0];
+  let pos='humanizacao';
+  if((reputacao==='melhor'||qualidade==='tecnica')&&estilo==='elegante') pos='autoridade';
+  else if(reputacao==='exclusiva'||qualidade==='exclusiva2') pos='exclusividade';
+  else if(reputacao==='diferente'||qualidade==='inovadora') pos='ruptura';
+  else if(reputacao==='resultado') pos='transformacao';
+  else if(motivacao==='pertencer') pos='proposito';
+  else if(reputacao==='humana'||qualidade==='humana2') pos='humanizacao';
+  const POSN={autoridade:'Autoridade Técnica',humanizacao:'Autoridade Humanizada',transformacao:'Especialista em Transformação',ruptura:'Voz Disruptiva',exclusividade:'Posicionamento Premium',proposito:'Profissional com Propósito'};
+  const POSD={autoridade:'Referência mais embasada da especialidade. O conteúdo precisa provar competência com dados e casos reais.',humanizacao:'Une conhecimento técnico com conexão emocional. Credível e acessível ao mesmo tempo.',transformacao:'Foco no resultado do paciente. Vende a mudança que provoca, não o serviço em si.',ruptura:'Questiona o padrão. Atrai quem está insatisfeito com o convencional.',exclusividade:'Comunica escassez e valor elevado. Não compete por preço — por qualidade percebida.',proposito:'A causa vem antes do serviço. Compartilha valores e impacto.'};
+  let tom='Autoridade Humanizada';let tomD='Une credibilidade e conexão.';
+  if(fala==='formal'&&estilo==='elegante'){tom='Técnico com Autoridade';tomD='Linguagem precisa, estruturada, embasada.';}
+  else if(fala==='proxima'){tom='Próxima e Acolhedora';tomD='Linguagem simples, quente, sem distância.';}
+  else if(fala==='direta'){tom='Direta e Objetiva';tomD='Vai direto ao ponto. Ideal para Reels curtos.';}
+  else if(fala==='entusiasta'){tom='Inspiradora e Motivacional';tomD='Usa histórias e emoção. Faz a pessoa querer agir.';}
+  const alertas=[];
+  if(dom==='foradlei'&&(qualidade==='exclusiva2'||reputacao==='exclusiva')) alertas.push('Arquétipo Fora da Lei + Premium pode soar agressivo — calibre o tom.');
+  if(dom==='governante'&&fala==='proxima') alertas.push('Comportamento natural próximo vs imagem de autoridade — equilibre nos conteúdos.');
+  if(!alertas.length) alertas.push('Perfil coerente — arquétipo, posicionamento e tom se alinham bem. Foco na consistência.');
+  return {
+    arqDominante:ARQS[dom]?.nome||dom,arqDominanteDesc:ARQS[dom]?.desc||'',arqDominanteEx:ARQS[dom]?.exemplos||'',arqDominanteTags:ARQS[dom]?.tags||[],
+    arqSustentavel:ARQS[sust]?.nome||sust,arqSustavelDesc:ARQS[sust]?.desc||'',arqSustavelTags:ARQS[sust]?.tags||[],
+    posicionamento:POSN[pos],posicionamentoDesc:POSD[pos],
+    tom,tomDesc:tomD,alertas,
+    resumo:`Perfil com base natural no arquétipo ${ARQS[dom]?.nome||dom}. No digital, sustenta um posicionamento de ${POSN[pos]}, comunicando com tom ${tom}. Os primeiros conteúdos devem reforçar essa identidade.`
+  };
+}
+
+async function gerarBioimpedancia(){
+  if(!clienteAtual){toast('Selecione uma cliente');return;}
+  const r={
+    motivacao:gV('bio_motivacao'),reacao:gV('bio_reacao'),estilo:gV('bio_estilo'),
+    reputacao:gV('bio_reputacao'),qualidade:gV('bio_qualidade'),fala:gV('bio_fala')
+  };
+  if(!r.motivacao||!r.reacao||!r.estilo||!r.reputacao||!r.qualidade||!r.fala){toast('Preencha todas as perguntas de múltipla escolha');return;}
+
+  // Salvar respostas
+  const clientes=S.clientes();
+  const c=clientes.find(x=>x.id===clienteAtual.id);
+  c.bioRespostas={...r,'bio-metricas':document.getElementById('bio-metricas')?.value||''};
+
+  const resultado=calcBio(r);
+  c.bioResultado=resultado;
+  S.set('clientes',clientes);clienteAtual=c;
+
+  // Se tem foto, usar IA para análise visual
+  const fotoInput=document.getElementById('bio-foto');
+  if(fotoInput?.files[0]){
+    document.getElementById('loading').classList.add('ativo');
+    document.getElementById('loading-txt').textContent='Analisando perfil visualmente...';
+    try{
+      const b64=await imgParaBase64(fotoInput.files[0]);
+      const metricas=document.getElementById('bio-metricas')?.value||'';
+      const analiseIA=await chamarIA(
+        `Você é Paula Andreza, estrategista de posicionamento digital especializada no Método PPP. Analise este perfil do Instagram de forma estratégica e direta. Responda em português do Brasil.`,
+        `Analise este perfil do Instagram.\n\nMétricas informadas: ${metricas}\n\nFaça uma análise em 4 pontos:\n**O que está funcionando:** 2-3 pontos positivos\n**O que está travando:** 2-3 problemas críticos\n**Oportunidades imediatas:** 2-3 ações que podem ser tomadas rapidamente\n**Conclusão estratégica:** 1 parágrafo direto`,
+        b64
+      );
+      c.bioResultado.analiseVisual=analiseIA;
+      const clientes2=S.clientes();
+      const c2=clientes2.find(x=>x.id===clienteAtual.id);
+      c2.bioResultado=c.bioResultado;
+      S.set('clientes',clientes2);clienteAtual=c2;
+    }catch(e){console.error(e);}
+    finally{document.getElementById('loading').classList.remove('ativo');}
+  }
+
+  renderBioResultado(clienteAtual.bioResultado);
+  renderFicha(clienteAtual);
+  toast('Bioimpedância gerada com sucesso!');
+}
+
+function renderBioResultado(r){
+  if(!r) return;
+  const tags=(arr,gold)=>(arr||[]).map(t=>`<span class="tag${gold?' gold':''}">${t}</span>`).join('');
+  const wrap=document.getElementById('bio-resultado');
+  wrap.style.display='block';
+  wrap.innerHTML=`
+  <div style="background:var(--preto);padding:20px 24px;margin-bottom:0;">
+    <div style="font-size:9px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:var(--ouro);margin-bottom:8px;">Bioimpedância de Posicionamento — Resultado</div>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;color:var(--branco);">${r.arqDominante} · ${r.posicionamento}</div>
+  </div>
+  <div style="background:var(--branco);border:1px solid var(--light);border-top:none;">
+    ${r.analiseVisual?`<div style="padding:20px 24px;border-bottom:1px solid var(--light);"><div style="font-size:9px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--ouro);margin-bottom:8px;">Análise Visual do Perfil</div><div style="font-size:13px;color:var(--cinza);line-height:1.8;">${r.analiseVisual.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}</div></div>`:''}
+    <div style="padding:20px 24px;border-bottom:1px solid var(--light);">
+      <div style="font-size:9px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--ouro);margin-bottom:8px;">Arquétipo Dominante</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--preto);margin-bottom:6px;">${r.arqDominante}</div>
+      <div style="font-size:13px;color:var(--cinza);line-height:1.8;margin-bottom:8px;">${r.arqDominanteDesc}<br><br><strong style="color:var(--charcoal);">Exemplos:</strong> ${r.arqDominanteEx}</div>
+      <div class="tag-row">${tags(r.arqDominanteTags,true)}</div>
+    </div>
+    <div style="padding:20px 24px;border-bottom:1px solid var(--light);">
+      <div style="font-size:9px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--ouro);margin-bottom:8px;">Arquétipo Sustentável</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--preto);margin-bottom:6px;">${r.arqSustentavel}</div>
+      <div style="font-size:13px;color:var(--cinza);line-height:1.8;margin-bottom:8px;">${r.arqSustavelDesc}</div>
+      <div class="tag-row">${tags(r.arqSustavelTags)}</div>
+    </div>
+    <div style="padding:20px 24px;border-bottom:1px solid var(--light);">
+      <div style="font-size:9px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--ouro);margin-bottom:8px;">Posicionamento Estratégico</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--preto);margin-bottom:6px;">${r.posicionamento}</div>
+      <div style="font-size:13px;color:var(--cinza);line-height:1.8;">${r.posicionamentoDesc}</div>
+    </div>
+    <div style="padding:20px 24px;border-bottom:1px solid var(--light);">
+      <div style="font-size:9px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--ouro);margin-bottom:8px;">Tom de Voz</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--preto);margin-bottom:6px;">${r.tom}</div>
+      <div style="font-size:13px;color:var(--cinza);line-height:1.8;">${r.tomDesc}</div>
+    </div>
+    <div style="padding:20px 24px;border-bottom:1px solid var(--light);">
+      <div style="font-size:9px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--ouro);margin-bottom:8px;">Alertas e Pontos de Atenção</div>
+      <div style="font-size:13px;color:var(--cinza);line-height:1.8;">${(r.alertas||[]).map(a=>'• '+a).join('<br><br>')}</div>
+    </div>
+    <div style="background:var(--preto);padding:20px 24px;">
+      <div style="font-size:9px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:var(--ouro);margin-bottom:8px;">Resumo Estratégico</div>
+      <div style="font-size:13px;color:var(--prata);line-height:1.8;">${r.resumo}</div>
+    </div>
+  </div>`;
+}
+
+function renderIAResultado(){
+  if(!clienteAtual) return;
+  const est=clienteAtual.estrategia;
+  const iaVazio=document.getElementById('ia-vazio');
+  const iaRes=document.getElementById('ia-resultado');
+  if(est&&est.blocos&&est.blocos.length){
+    iaVazio.style.display='none';
+    iaRes.style.display='block';
+    document.getElementById('ia-gerado-em').textContent='Gerado em '+est.geradoEm+' · '+S.config().nome;
+    document.getElementById('ia-blocos').innerHTML=est.blocos.map((b,i)=>blocoHTML(b,i+1)).join('');
+    restaurarObs();
+  } else {
+    iaVazio.style.display='block';
+    iaRes.style.display='none';
+  }
+}
+
+function blocoHTML(b,num){
+  return `<div class="est-bloco">
+    <div class="est-hdr"><div class="est-num">${num}</div><div class="est-titulo">${b.titulo}</div></div>
+    <div class="est-body">
+      <div class="est-resultado">${b.conteudo}</div>
+      <div class="est-obs-area">
+        <div class="est-obs-label">Suas Observações</div>
+        <textarea class="form-textarea" rows="3" placeholder="Adicione observações, ajustes ou complementos..." oninput="salvarObs(this,'${b.titulo}')" data-secao="${b.titulo}"></textarea>
+      </div>
+    </div>
+  </div>`;
+}
+
+function salvarObs(el,titulo){
+  if(!clienteAtual) return;
+  const clientes=S.clientes();
+  const c=clientes.find(x=>x.id===clienteAtual.id);
+  if(!c.obsSecoes) c.obsSecoes={};
+  c.obsSecoes[titulo]=el.value;
+  S.set('clientes',clientes);clienteAtual=c;
+}
+
+function restaurarObs(){
+  if(!clienteAtual?.obsSecoes) return;
+  setTimeout(()=>{
+    document.querySelectorAll('[data-secao]').forEach(el=>{
+      const titulo=el.getAttribute('data-secao');
+      if(clienteAtual.obsSecoes[titulo]) el.value=clienteAtual.obsSecoes[titulo];
+    });
+  },100);
+}
+
+// ══════════ GERAR ESTRATÉGIA IA ══════════
+async function gerarEstrategiaCompleta(){
+  if(!clienteAtual){toast('Selecione uma cliente');return;}
+  const b=clienteAtual.briefing||{};
+  if(!b['b-esp']){toast('Preencha o briefing primeiro — informe ao menos a especialidade');return;}
+  const bio=clienteAtual.bioResultado||{};
+
+  const passos=['Analisando o perfil atual...','Identificando arquétipo e posicionamento...','Mapeando avatar e público-alvo...','Definindo linha editorial...','Criando narrativa e storytelling...','Gerando os 12 primeiros conteúdos...','Criando os 3 roteiros de vídeo...','Montando o documento de apresentação...'];
+  let pi=0;
+  document.getElementById('loading').classList.add('ativo');
+  document.getElementById('loading-txt').textContent='Gerando estratégia completa...';
+  const iv=setInterval(()=>{if(pi<passos.length){document.getElementById('loading-step').textContent=passos[pi];pi++;}},4000);
+
+  try{
+    const prompt=`Você é uma estrategista sênior de posicionamento digital especializada no Método PPP. Crie a estratégia completa de posicionamento digital para o cliente abaixo.
+
+DADOS DO CLIENTE:
+Nome: ${clienteAtual.nome}
+Especialidade: ${b['b-esp']||'—'}
+Perfil atual: ${b['b-perfil']||'—'}
+Métricas: ${b['b-metricas']||'—'}
+Público atual: ${b['b-publico-atual']||'—'}
+Público desejado: ${b['b-publico-desejado']||'—'}
+Objetivo: ${b['b-objetivo']||'—'}
+Serviços: ${b['b-servicos']||'—'}
+Diferenciais: ${b['b-diferenciais']||'—'}
+Rascunhos: ${b['b-rascunhos']||'—'}
+Referência: ${b['b-referencia']||'—'}
+Como se descreve: ${b.b_identidade||'—'}
+Motivação: ${b.b_motivacao||'—'}
+Reação a crises: ${b.b_reacao||'—'}
+Estilo: ${b.b_estilo||'—'}
+Reputação desejada: ${b.b_reputacao||'—'}
+Como fala em vídeos: ${b.b_fala||'—'}
+Arquétipo dominante (bioimpedância): ${bio.arqDominante||'A definir'}
+Posicionamento (bioimpedância): ${bio.posicionamento||'A definir'}
+Tom de voz (bioimpedância): ${bio.tom||'A definir'}
+Observações: ${b['b-obs']||'—'}
+
+Crie a estratégia em EXATAMENTE estas 11 seções com os títulos em negrito:
+
+**DIAGNÓSTICO DO PERFIL ATUAL**
+Análise completa e honesta. O que está funcionando, o que está travando, os 3 pontos críticos e as 3 oportunidades imediatas.
+
+**ARQUÉTIPO DOMINANTE**
+Nome do arquétipo, por que surgiu com base nos dados, como ele aparece na comunicação, exemplos de marcas com esse arquétipo.
+
+**ARQUÉTIPO SUSTENTÁVEL**
+Nome, como incorporar, como os dois arquétipos se complementam na prática.
+
+**POSICIONAMENTO ESTRATÉGICO**
+Tipo de posicionamento, por que faz sentido, frase de posicionamento (como ela deve se apresentar em 1 linha).
+
+**TOM DE VOZ**
+Definição do tom, 3 exemplos práticos: 1 para legenda de post, 1 para stories, 1 para vídeo.
+
+**AVATAR E PÚBLICO-ALVO**
+Nome fictício, idade, profissão, renda, rotina, onde passa tempo online, o que busca, principais dores, principais desejos. Seja específica.
+
+**LINHA EDITORIAL**
+4-5 linhas editoriais com nome, descrição, proporção mensal e exemplo de tema para cada.
+
+**NARRATIVA E STORYTELLING**
+O fio condutor do perfil — como ela se apresenta, a jornada que leva o seguidor, o arco narrativo dos primeiros 30 dias.
+
+**OS 12 PRIMEIROS CONTEÚDOS**
+Lista numerada. Para cada: tema chamativo, formato, linha editorial, hook de abertura (primeira frase que para o scroll).
+
+**3 ROTEIROS DE VÍDEO**
+ROTEIRO 1 — Vídeo Falado Direto (humanização): hook, desenvolvimento, CTA
+ROTEIRO 2 — Educativo com Texto (autoridade): hook, desenvolvimento, CTA
+ROTEIRO 3 — Bastidores/Rotina (prova social): hook, desenvolvimento, CTA
+
+**SUGESTÕES DE MELHORIA DO PERFIL**
+7 melhorias urgentes e específicas para bio, link, foto, destaques, identidade visual, frequência.
+
+Responda em português do Brasil. Use os dados fornecidos para personalizar cada seção.`;
+
+    const texto=await chamarIA(prompt);
+    clearInterval(iv);
+
+    const blocos=parsearBlocos(texto);
+    const clientes=S.clientes();
+    const c=clientes.find(x=>x.id===clienteAtual.id);
+    c.estrategia={
+      blocos,
+      arqDominante:bio.arqDominante||extrairPrimeiraPalavra(blocos[1]?.conteudo||''),
+      posicionamento:bio.posicionamento||extrairPrimeiraPalavra(blocos[3]?.conteudo||''),
+      tom:bio.tom||extrairPrimeiraPalavra(blocos[4]?.conteudo||''),
+      geradoEm:new Date().toLocaleDateString('pt-BR')
+    };
+    S.set('clientes',clientes);clienteAtual=c;
+
+    renderIAResultado();
+    renderFicha(clienteAtual);
+    switchTab(document.querySelectorAll('.tab-bar .tab')[4],'tab-ia');
+    toast('Estratégia completa gerada!');
+  }catch(e){
+    clearInterval(iv);
+    toast('Erro ao conectar com a IA. Verifique sua conexão.');
+    console.error(e);
+  }finally{
+    document.getElementById('loading').classList.remove('ativo');
+    document.getElementById('loading-step').textContent='Aguarde';
+  }
+}
+
+function parsearBlocos(texto){
+  const partes=texto.split(/\*\*([^*]+)\*\*/g).filter(s=>s.trim());
+  const blocos=[];
+  for(let i=0;i<partes.length-1;i+=2){
+    blocos.push({
+      titulo:partes[i].trim(),
+      conteudo:partes[i+1].replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>').trim()
+    });
+  }
+  return blocos;
+}
+
+function extrairPrimeiraPalavra(html){
+  const txt=html.replace(/<[^>]+>/g,'').trim();
+  const linhas=txt.split('\n').filter(l=>l.trim());
+  for(const l of linhas){if(l.length>3&&l.length<60) return l.trim();}
+  return '—';
+}
+
+// ══════════ GERAR PDF ══════════
+function gerarPDF(){
+  if(!clienteAtual?.estrategia?.blocos) return;
+  const cfg=S.config();
+  const obs=clienteAtual.obsSecoes||{};
+  const bioR=clienteAtual.bioResultado||{};
+  const pdfWin=window.open('','_blank');
+  if(!pdfWin){toast('Permita popups para gerar o PDF');return;}
+  pdfWin.document.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Estratégia — ${clienteAtual.nome}</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Barlow',sans-serif;font-weight:300;color:#2A2A2A;}
+.capa{background:#0D0D0D;min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;padding:64px 72px;page-break-after:always;}
+.eyebrow{font-size:9px;font-weight:600;letter-spacing:.4em;text-transform:uppercase;color:#C9A84C;margin-bottom:48px;}
+.capa-titulo{font-family:'Cormorant Garamond',serif;font-size:60px;font-weight:300;color:#fff;line-height:1.05;margin-bottom:16px;}
+.capa-titulo em{font-style:italic;color:#E2C97E;}
+.capa-sub{font-size:13px;color:#C0C0C0;letter-spacing:.1em;margin-bottom:40px;}
+.capa-linha{width:56px;height:1px;background:#C9A84C;margin-bottom:28px;}
+.capa-cliente{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;color:#fff;}
+.capa-esp{font-size:12px;color:#C0C0C0;margin-top:6px;}
+.capa-footer{font-size:11px;color:#555;letter-spacing:.06em;}
+.capa-footer strong{color:#C9A84C;font-weight:400;}
+.pag{padding:56px 72px;page-break-inside:avoid;}
+.pag:nth-child(even){background:#F8F7F5;}
+.pag-hdr{display:flex;align-items:center;gap:16px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #EFEFEF;}
+.pag-num{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:300;color:#C9A84C;line-height:1;min-width:48px;}
+.pag-titulo{font-size:10px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:#6B6B6B;}
+.pag-conteudo{font-size:13px;color:#6B6B6B;line-height:1.9;}
+.pag-conteudo strong{color:#2A2A2A;font-weight:500;}
+.obs-box{margin-top:20px;border-top:1px solid #EFEFEF;padding-top:16px;}
+.obs-lbl{font-size:9px;font-weight:600;letter-spacing:.25em;text-transform:uppercase;color:#C9A84C;margin-bottom:8px;}
+.obs-txt{font-size:13px;color:#2A2A2A;line-height:1.7;font-style:italic;background:#FDF9F1;padding:12px 16px;}
+.rodape{background:#0D0D0D;padding:28px 72px;display:flex;justify-content:space-between;align-items:center;}
+.rodape p{font-size:11px;color:#C0C0C0;}
+.rodape strong{color:#C9A84C;font-weight:400;}
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}@page{margin:0;size:A4;}.pag{page-break-inside:avoid;}}
+</style></head><body>
+<div class="capa">
+  <div>
+    <div class="eyebrow">Método PPP · Perfil com Propósito · Estratégia Completa de Posicionamento</div>
+    <div class="capa-titulo">Estratégia de<br><em>Posicionamento</em><br>Digital</div>
+    <div class="capa-sub">Diagnóstico · Avatar · Arquétipo · Linha Editorial · Conteúdos · Roteiros</div>
+    <div class="capa-linha"></div>
+    <div class="capa-cliente">${clienteAtual.nome}</div>
+    <div class="capa-esp">${clienteAtual.esp||''}${clienteAtual.cidade?' · '+clienteAtual.cidade:''}</div>
+  </div>
+  <div class="capa-footer"><strong>${cfg.nome}</strong> · ${cfg.ig} · ${cfg.wp}<br>Documento gerado em ${new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'})}</div>
+</div>
+${clienteAtual.estrategia.blocos.map((b,i)=>`
+<div class="pag">
+  <div class="pag-hdr"><div class="pag-num">${i+1}</div><div class="pag-titulo">${b.titulo}</div></div>
+  <div class="pag-conteudo">${b.conteudo}</div>
+  ${obs[b.titulo]?`<div class="obs-box"><div class="obs-lbl">Observações da Estrategista</div><div class="obs-txt">${obs[b.titulo]}</div></div>`:''}
+</div>`).join('')}
+<div class="rodape"><p><strong>${cfg.nome}</strong> · Estrategista de Posicionamento Digital · Método PPP</p><p>${cfg.ig} · ${cfg.wp}</p></div>
+<script>window.onload=function(){setTimeout(function(){window.print();},800);};<\/script>
+</body></html>`);
+  pdfWin.document.close();
+}
+
+// ══════════ IA HELPER ══════════
+async function chamarIA(prompt,imageBase64=null){
+  const msgs=[];
+  if(imageBase64){
+    msgs.push({role:'user',content:[{type:'image',source:{type:'base64',media_type:'image/jpeg',data:imageBase64}},{type:'text',text:prompt}]});
+  } else {
+    msgs.push({role:'user',content:prompt});
+  }
+  const resp=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1000,messages:msgs})
+  });
+  const data=await resp.json();
+  if(data.error) throw new Error(data.error.message);
+  return data.content?.[0]?.text||'';
+}
+
+function imgParaBase64(file){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=e=>res(e.target.result.split(',')[1]);
+    r.onerror=rej;
+    r.readAsDataURL(file);
+  });
+}
+
+// ══════════ ARQUÉTIPOS VISUAL ══════════
+function renderArquetipos(){
+  const el=document.getElementById('arq-grid');
+  el.innerHTML=Object.entries(ARQS).map(([k,a])=>`
+    <div class="arq-card" onclick="verArquetipo('${k}')">
+      <div class="arq-card-nome">${a.nome}</div>
+      <div class="arq-card-desc">${a.desc.substring(0,60)}...</div>
+      <div class="arq-card-ex">${a.exemplos.split(',')[0]}</div>
+    </div>`).join('');
+}
+
+function verArquetipo(k){
+  const a=ARQS[k];
+  document.querySelectorAll('.arq-card').forEach(c=>c.classList.remove('ativo'));
+  event.target.closest('.arq-card').classList.add('ativo');
+  document.getElementById('arq-det-nome').textContent=a.nome;
+  document.getElementById('arq-det-desc').textContent=a.desc;
+  document.getElementById('arq-det-ex').textContent=a.exemplos;
+  document.getElementById('arq-det-tags').innerHTML=a.tags.map(t=>`<span class="tag gold">${t}</span>`).join('');
+  document.getElementById('arq-det-tom').textContent=a.tom;
+  document.getElementById('arq-detalhe').style.display='block';
+}
+
+// ══════════ DOCUMENTOS ══════════
+function abrirModalDoc(){document.getElementById('doc-nome').value='';document.getElementById('doc-link').value='';document.getElementById('doc-notas').value='';document.getElementById('modal-doc').classList.add('ativo');}
+function salvarDocumento(){
+  if(!clienteAtual) return;
+  const nome=document.getElementById('doc-nome').value.trim();
+  if(!nome){toast('Informe o nome');return;}
+  const clientes=S.clientes();
+  const c=clientes.find(x=>x.id===clienteAtual.id);
+  if(!c.docs) c.docs=[];
+  c.docs.push({id:'d_'+Date.now(),nome,tipo:document.getElementById('doc-tipo').value,link:document.getElementById('doc-link').value.trim(),notas:document.getElementById('doc-notas').value.trim(),data:new Date().toLocaleDateString('pt-BR')});
+  S.set('clientes',clientes);clienteAtual=c;
+  fecharModal('modal-doc');renderDocs();toast('Documento adicionado');
+}
+function renderDocs(){
+  if(!clienteAtual) return;
+  const docs=clienteAtual.docs||[];
+  const el=document.getElementById('docs-lista');
+  if(!docs.length){el.innerHTML='<div class="empty"><div class="empty-icon">📄</div><p>Nenhum documento adicionado ainda.</p></div>';return;}
+  el.innerHTML=docs.map(d=>`<div class="cliente-row" style="cursor:default;">
+    <div style="font-size:20px;color:var(--ouro);flex-shrink:0;">📄</div>
+    <div class="cliente-info"><div class="cliente-nome">${d.nome}</div><div class="cliente-esp">${d.tipo} · ${d.data}</div></div>
+    ${d.link?`<a href="${d.link}" target="_blank" class="btn btn-outline" style="font-size:11px;padding:4px 10px;">Abrir</a>`:''}
+    <button class="btn btn-danger" style="font-size:11px;padding:4px 10px;" onclick="removerDoc('${d.id}')">×</button>
+  </div>`).join('');
+}
+function removerDoc(id){
+  if(!clienteAtual) return;
+  const clientes=S.clientes();
+  const c=clientes.find(x=>x.id===clienteAtual.id);
+  c.docs=(c.docs||[]).filter(d=>d.id!==id);
+  S.set('clientes',clientes);clienteAtual=c;renderDocs();
+}
+
+
+// ══════════ LINK BRIEFING ══════════
+function copiarLinkBriefing(){
+  if(!clienteAtual) return;
+  const baseUrl=window.location.origin+window.location.pathname.replace("index.html","").replace(/\/[^/]*$/,"/")+"";
+  const nomeEnc=encodeURIComponent(clienteAtual.nome);
+  const link=`https://metodo-pp.netlify.app/briefing-publico.html?id=${clienteAtual.id}&nome=${nomeEnc}`;
+  navigator.clipboard.writeText(link).then(()=>{
+    const box=document.getElementById("link-briefing-box");
+    const txt=document.getElementById("link-briefing-txt");
+    txt.textContent=link;
+    box.style.display="block";
+    toast("Link copiado! Cole no WhatsApp da cliente");
+  }).catch(()=>{
+    const box=document.getElementById("link-briefing-box");
+    const txt=document.getElementById("link-briefing-txt");
+    txt.textContent=`https://metodo-pp.netlify.app/briefing-publico.html?id=${clienteAtual.id}&nome=${nomeEnc}`;
+    box.style.display="block";
+    toast("Copie o link acima e envie no WhatsApp");
+  });
+}
+// ══════════ NOTAS ══════════
+function salvarNotas(){
+  if(!clienteAtual) return;
+  const clientes=S.clientes();
+  const c=clientes.find(x=>x.id===clienteAtual.id);
+  c.notas=document.getElementById('notas-textarea').value;
+  S.set('clientes',clientes);clienteAtual=c;
+}
+
+// ══════════ MODAL CLIENTE ══════════
+function abrirModalCliente(id=null){
+  const c=id?S.clientes().find(x=>x.id===id):null;
+  document.getElementById('modal-c-titulo').textContent=c?'Editar cliente':'Nova cliente';
+  document.getElementById('edit-id').value=c?c.id:'';
+  document.getElementById('c-nome').value=c?c.nome:'';
+  document.getElementById('c-esp').value=c?c.esp||'':'';
+  document.getElementById('c-cidade').value=c?c.cidade||'':'';
+  document.getElementById('c-tel').value=c?c.tel||'':'';
+  document.getElementById('c-ig').value=c?c.ig||'':'';
+  document.getElementById('c-status').value=c?c.status||'novo':'novo';
+  document.getElementById('c-prazo').value=c?c.prazo||'':'';
+  document.getElementById('c-trello').value=c?c.trello||'':'';
+  document.getElementById('c-drive').value=c?c.drive||'':'';
+  document.getElementById('c-valor').value=c?c.valor||S.config().valor:'';
+  document.getElementById('c-pagamento').value=c?c.pagamento||'pix':'pix';
+  document.getElementById('c-status-pag').value=c?c.statusPag||'pendente':'pendente';
+  document.getElementById('modal-cliente').classList.add('ativo');
+}
+function editarClienteAtual(){if(clienteAtual) abrirModalCliente(clienteAtual.id);}
+function salvarCliente(){
+  const nome=document.getElementById('c-nome').value.trim();
+  if(!nome){toast('Informe o nome');return;}
+  const id=document.getElementById('edit-id').value||'c_'+Date.now();
+  const clientes=S.clientes();
+  const idx=clientes.findIndex(c=>c.id===id);
+  const base=idx>=0?clientes[idx]:{};
+  const formaPag=document.getElementById('c-pagamento').value;
+  const valorBruto=parseFloat(document.getElementById('c-valor').value)||0;
+  const taxas={pix:0.0099,credito2:0.0493,credito3:0.0793,outro:0};
+  const taxa=taxas[formaPag]||0;
+  const valorLiquido=Math.round(valorBruto*(1-taxa)*100)/100;
+  const novo={...base,id,nome,
+    esp:document.getElementById('c-esp').value.trim(),
+    cidade:document.getElementById('c-cidade').value.trim(),
+    tel:document.getElementById('c-tel').value.trim(),
+    ig:document.getElementById('c-ig').value.trim(),
+    status:document.getElementById('c-status').value,
+    prazo:document.getElementById('c-prazo').value,
+    trello:document.getElementById('c-trello').value.trim(),
+    drive:document.getElementById('c-drive').value.trim(),
+    valor:document.getElementById('c-valor').value,
+    pagamento:formaPag,
+    statusPag:document.getElementById('c-status-pag').value,
+    valorLiquido:valorLiquido,
+    criado:base.criado||new Date().toISOString()
+  };
+  if(idx>=0) clientes[idx]=novo; else clientes.push(novo);
+  S.set('clientes',clientes);
+  fecharModal('modal-cliente');toast('Cliente salva');
+  if(clienteAtual&&clienteAtual.id===id){clienteAtual=novo;renderFicha(novo);}
+  renderListaClientes();renderDashboard();
+}
+function confirmarExclusao(){
+  if(!clienteAtual) return;
+  if(!confirm('Excluir '+clienteAtual.nome+'?')) return;
+  S.set('clientes',S.clientes().filter(c=>c.id!==clienteAtual.id));
+  clienteAtual=null;toast('Cliente removida');navTo('clientes');
+}
+
+// ══════════ AGENDA ══════════
+function abrirModalAgenda(){['ag-titulo','ag-data','ag-hora','ag-cliente'].forEach(id=>document.getElementById(id).value='');document.getElementById('modal-agenda').classList.add('ativo');}
+function salvarAgenda(){
+  const titulo=document.getElementById('ag-titulo').value.trim();
+  const data=document.getElementById('ag-data').value;
+  if(!titulo||!data){toast('Informe título e data');return;}
+  const evs=S.agenda();
+  evs.push({id:'a_'+Date.now(),titulo,data,hora:document.getElementById('ag-hora').value,cliente:document.getElementById('ag-cliente').value.trim(),tipo:document.getElementById('ag-tipo').value});
+  S.set('agenda',evs.sort((a,b)=>a.data.localeCompare(b.data)));
+  fecharModal('modal-agenda');renderAgenda();toast('Evento salvo');
+}
+function renderAgenda(){
+  const evs=S.agenda();
+  const el=document.getElementById('agenda-lista');
+  if(!evs.length){el.innerHTML='<div class="empty"><div class="empty-icon">📅</div><p>Nenhum evento ainda.</p></div>';return;}
+  const meses=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  el.innerHTML=evs.map(e=>{
+    const d=new Date(e.data+'T00:00:00');
+    return `<div class="agenda-item">
+      <div class="agenda-date"><div class="agenda-day">${d.getDate()}</div><div class="agenda-month">${meses[d.getMonth()]}</div></div>
+      <div style="flex:1;"><div style="font-size:13px;font-weight:500;color:var(--preto);">${e.titulo}</div><div style="font-size:11px;color:var(--cinza);margin-top:2px;">${e.tipo}${e.cliente?' · '+e.cliente:''}${e.hora?' · '+e.hora:''}</div></div>
+      <button class="btn btn-danger" style="font-size:11px;padding:4px 10px;" onclick="removerAgenda('${e.id}')">×</button>
+    </div>`;
+  }).join('');
+}
+function removerAgenda(id){S.set('agenda',S.agenda().filter(e=>e.id!==id));renderAgenda();}
+
+// ══════════ CONFIG ══════════
+function salvarConfig(){
+  S.set('config',{nome:document.getElementById('cfg-nome').value,ig:document.getElementById('cfg-ig').value,wp:document.getElementById('cfg-wp').value,email:document.getElementById('cfg-email').value,metaC:parseInt(document.getElementById('cfg-meta-c').value)||8,valor:parseInt(document.getElementById('cfg-valor').value)||1297});
+  toast('Configurações salvas');renderDashboard();
+}
+function exportarDados(){
+  const blob=new Blob([JSON.stringify({clientes:S.clientes(),agenda:S.agenda(),config:S.config()},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ppp-'+new Date().toISOString().slice(0,10)+'.json';a.click();
+}
+function limparDados(){if(!confirm('Apagar tudo?')) return;['clientes','agenda'].forEach(k=>localStorage.removeItem('ppp_'+k));toast('Apagado');navTo('dashboard');}
+
+// ══════════ UTILS ══════════
+function fecharModal(id){document.getElementById(id).classList.remove('ativo');}
+function switchTab(el,tabId){
+  document.querySelectorAll('.tab-bar .tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('[id^="tab-"]').forEach(t=>t.classList.remove('active'));
+  if(el) el.classList.add('active');
+  const tc=document.getElementById(tabId);if(tc) tc.classList.add('active');
+  if(tabId==='tab-bio'&&clienteAtual?.bioResultado) renderBioResultado(clienteAtual.bioResultado);
+}
+function toast(msg,dur=3000){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('ativo');setTimeout(()=>el.classList.remove('ativo'),dur);}
+document.querySelectorAll('.modal-overlay').forEach(m=>{m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('ativo');});});
+
+// INIT
+renderDashboard();
+</script>
+</body>
+</html>
